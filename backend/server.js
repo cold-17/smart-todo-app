@@ -11,7 +11,7 @@ app.use(express.json());
 
 // Routes
 app.use('/api/auth', require('./routes/auth'));
-app.use('/api/todos', require('./routes/todos'));
+// app.use('/api/todos', require('./routes/todos')); // commented out temporarily
 
 // Basic test route
 app.get('/', (req, res) => {
