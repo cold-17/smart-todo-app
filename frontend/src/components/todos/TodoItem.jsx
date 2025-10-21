@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useTodos } from '../../context/TodoContext';
 import EditTodoForm from './EditTodoForm';
+import PomodoroTimer from '../productivity/PomodoroTimer';
 
 const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showSubtasks, setShowSubtasks] = useState(false);
   const [newSubtask, setNewSubtask] = useState('');
+  const [showPomodoro, setShowPomodoro] = useState(false);
   const { deleteTodo, toggleTodoComplete, updateTodo } = useTodos();
 
   const handleToggleComplete = async () => {
@@ -259,6 +261,17 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
 
           {/* Action Buttons */}
           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+            {!todo.completed && (
+              <button
+                onClick={() => setShowPomodoro(true)}
+                className="p-2 text-gray-400 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition-all"
+                title="Start Pomodoro timer"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </button>
+            )}
             <button
               onClick={() => setShowEditModal(true)}
               className="p-2 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-all"
@@ -284,6 +297,11 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
       {/* Edit Modal */}
       {showEditModal && (
         <EditTodoForm todo={todo} onClose={() => setShowEditModal(false)} />
+      )}
+
+      {/* Pomodoro Timer */}
+      {showPomodoro && (
+        <PomodoroTimer task={todo} onClose={() => setShowPomodoro(false)} />
       )}
     </div>
   );

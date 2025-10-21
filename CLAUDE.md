@@ -7,10 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Smart ToDo App is a full-stack todo application with JWT authentication and productivity tracking. The application uses a monorepo structure with separate frontend and backend directories.
 
 **Tech Stack:**
-- Frontend: React 19 + Vite, Tailwind CSS, React Router, Axios, Socket.io Client
+- Frontend: React 19 + Vite, Tailwind CSS, React Router, Axios, Socket.io Client, Recharts (data viz), date-fns
 - Backend: Node.js + Express 5, MongoDB + Mongoose, JWT auth, bcryptjs, Socket.io
 - AI: OpenAI GPT-4 for natural language task parsing and smart features
 - Real-time: Socket.io for live collaboration and presence tracking
+- Analytics: Comprehensive productivity tracking and data visualization
 
 ## Development Commands
 
@@ -27,6 +28,13 @@ npm run build   # Build for production
 npm run lint    # Run ESLint
 npm run preview # Preview production build
 ```
+
+**Dependencies:**
+- recharts: For data visualization and analytics charts
+- date-fns: For date formatting in analytics
+- framer-motion: For smooth animations and transitions
+- @dnd-kit: For drag & drop functionality
+- jspdf & jspdf-autotable: For PDF export
 
 ### Running the Full Application
 1. Start MongoDB (locally or use MongoDB Atlas connection string)
@@ -83,6 +91,7 @@ Frontend routes (React Router v7):
 - `/` → redirects to `/dashboard`
 - `/login`, `/register` → public routes (redirect to dashboard if authenticated)
 - `/dashboard` → protected route, main todo interface
+- `/analytics` → protected route, productivity analytics and insights dashboard
 
 Backend routes:
 - `/api/auth/*` → register, login, get current user
@@ -98,6 +107,7 @@ Backend routes:
 - `/api/shared-lists/:id/invite` → POST invite user by email
 - `/api/shared-lists/:id/members/:userId` → DELETE remove member
 - `/api/shared-lists/:id/todos` → GET todos for a shared list
+- `/api/analytics` → GET comprehensive analytics (supports ?days parameter for time range)
 
 ### Todo Filtering
 Backend supports query parameters:
@@ -132,19 +142,109 @@ The Smart Add Todo Form includes AI-powered features:
 AI features require a valid OpenAI API key in the backend `.env` file. The app gracefully falls back to manual mode if the API key is not configured.
 
 ## Key Features
+
+### Core Productivity
 - JWT authentication with protected routes
 - Dark mode support with system preference detection
 - Toast notifications for user feedback
-- Subtasks with progress tracking
+- Subtasks with progress tracking and visual indicators
 - Bulk actions (select multiple, complete/delete all)
 - Advanced filtering and sorting (by priority, due date, category, title)
-- Overdue task highlighting
+- Overdue task highlighting with animations
 - Statistics dashboard (total, completed, pending, completion rate)
-- AI-powered task creation and management
-- **Real-time Collaboration**:
-  - Create shared todo lists
-  - Invite team members by email
-  - Live presence indicators (see who's online)
-  - Real-time sync of todo changes across all connected users
-  - Role-based access control (owner/editor/viewer)
-  - WebSocket connection with JWT authentication
+
+### AI-Powered Features
+- Natural language task parsing
+- Smart priority suggestions
+- Automatic task decomposition into subtasks
+- AI-powered categorization
+
+### Real-time Collaboration
+- Create shared todo lists
+- Invite team members by email
+- Live presence indicators (see who's online)
+- Real-time sync of todo changes across all connected users
+- Role-based access control (owner/editor/viewer)
+- WebSocket connection with JWT authentication
+
+### Analytics & Insights
+- **Productivity Analytics Dashboard** (`/analytics` route):
+  - Interactive charts with Recharts library
+  - Daily activity trends (tasks created vs completed)
+  - Category breakdown pie chart
+  - Priority distribution bar chart
+  - 90-day productivity heatmap with GitHub-style visualization
+  - Time range selector (7/30/90 days)
+- **Advanced Metrics**:
+  - Current streak and longest streak tracking
+  - Peak productivity hour analysis
+  - On-time completion rate
+  - Completion rate trends over time
+- **Achievement System**:
+  - Unlockable badges (First Task, 10-day streak, Century, etc.)
+  - Visual achievement cards with descriptions
+  - Progress tracking towards goals
+
+### Focus & Time Management
+- **Pomodoro Timer**:
+  - Integrated timer for each task
+  - 25-minute focus sessions
+  - 5-minute short breaks
+  - 15-minute long breaks (after 4 pomodoros)
+  - Visual circular progress indicator
+  - Browser notifications on timer completion
+  - Session tracking (completed pomodoros, total focus time)
+  - Auto-switching between work and break modes
+  - Audio notification on completion
+
+- **Focus Mode** (Distraction-free interface):
+  - Full-screen immersive task view
+  - Animated gradient background
+  - Priority-based task queue
+  - Comprehensive keyboard shortcuts:
+    - J/↓: Next task
+    - K/↑: Previous task
+    - X/Space: Complete task
+    - T: Start Pomodoro timer
+    - ?: Show shortcuts
+    - Esc: Exit focus mode
+  - Visual progress indicator
+  - Quick access to Pomodoro timer
+  - Auto-advance after completing tasks
+  - Beautiful completion celebration
+
+### Enhanced UI/UX
+- **Drag & Drop**:
+  - Reorder tasks via drag and drop (@dnd-kit)
+  - Visual drag handles on hover
+  - Smooth animations during drag
+  - Keyboard accessible (arrow keys + space)
+
+- **View Modes**:
+  - List view (default)
+  - Grid view (cards layout)
+  - Compact view (dense list)
+
+- **Smooth Animations** (Framer Motion):
+  - Page transitions
+  - Modal animations
+  - Staggered list item animations
+  - Hover and click feedback
+  - Loading states
+  - Success celebrations
+
+- **Advanced Filtering & Search**:
+  - Real-time search across title and description
+  - Multi-criteria filtering (category, priority, status)
+  - Multiple sort options
+  - Clear visual indicators
+  - Instant results
+
+### Data Export
+- **Export Options**:
+  - **PDF Report**: Professional formatted report with stats, priority grouping, and task details
+  - **CSV Spreadsheet**: Compatible with Excel and Google Sheets
+  - **JSON Backup**: Complete data export for developers and backup
+- Beautiful export modal with format previews
+- Auto-dated filenames
+- One-click download

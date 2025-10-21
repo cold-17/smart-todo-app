@@ -7,6 +7,7 @@ import { ToastProvider } from './components/common/ToastContainer';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import Analytics from './pages/Analytics';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -75,6 +76,14 @@ function App() {
                       element={
                         <ProtectedRoute>
                           <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route
+                      path="/analytics"
+                      element={
+                        <ProtectedRoute>
+                          <Analytics />
                         </ProtectedRoute>
                       }
                     />

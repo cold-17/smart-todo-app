@@ -3,9 +3,11 @@ import { useAuth } from '../context/AuthContext';
 import { useTodos } from '../context/TodoContext';
 import { useTheme } from '../context/ThemeContext';
 import { useSocket } from '../context/SocketContext';
-import TodoList from '../components/todos/TodoList';
+import EnhancedTodoList from '../components/todos/EnhancedTodoList';
 import SmartAddTodoForm from '../components/todos/SmartAddTodoForm';
 import ShareModal from '../components/collaboration/ShareModal';
+import FocusMode from '../components/productivity/FocusMode';
+import ExportModal from '../components/common/ExportModal';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -14,6 +16,8 @@ const Dashboard = () => {
   const { connected, activeUsers } = useSocket();
   const [showAddForm, setShowAddForm] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showFocusMode, setShowFocusMode] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
 
   useEffect(() => {
     fetchStats();
@@ -59,6 +63,28 @@ const Dashboard = () => {
                   </span>
                 )}
               </div>
+
+              <button
+                onClick={() => window.location.href = '/analytics'}
+                className="px-3 h-8 rounded-full text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 flex items-center gap-1.5"
+                title="View Analytics"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <span className="hidden sm:inline">Analytics</span>
+              </button>
+
+              <button
+                onClick={() => setShowExportModal(true)}
+                className="px-3 h-8 rounded-full text-xs font-medium text-green-600 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/20 transition-all duration-200 flex items-center gap-1.5"
+                title="Export Tasks"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <span className="hidden sm:inline">Export</span>
+              </button>
 
               <button
                 onClick={toggleDarkMode}
@@ -164,6 +190,16 @@ const Dashboard = () => {
             </div>
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setShowFocusMode(true)}
+                className="group h-10 px-5 bg-gradient-to-r from-orange-500 to-pink-600 hover:from-orange-600 hover:to-pink-700 text-white rounded-full text-sm font-semibold transition-all duration-200 shadow-lg shadow-orange-500/30 hover:shadow-xl hover:shadow-orange-500/40 flex items-center gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                <span>Focus</span>
+              </button>
+
+              <button
                 onClick={() => setShowShareModal(true)}
                 className="group h-10 px-5 bg-purple-600 hover:bg-purple-700 dark:bg-purple-500 dark:hover:bg-purple-600 text-white rounded-full text-sm font-semibold transition-all duration-200 shadow-lg shadow-purple-500/30 hover:shadow-xl hover:shadow-purple-500/40 flex items-center gap-2"
               >
@@ -188,7 +224,7 @@ const Dashboard = () => {
 
         {/* Todo List */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-          <TodoList />
+          <EnhancedTodoList />
         </div>
 
         {/* Add Todo Form Modal */}
@@ -199,6 +235,16 @@ const Dashboard = () => {
         {/* Share Modal */}
         {showShareModal && (
           <ShareModal onClose={() => setShowShareModal(false)} />
+        )}
+
+        {/* Focus Mode */}
+        {showFocusMode && (
+          <FocusMode onClose={() => setShowFocusMode(false)} />
+        )}
+
+        {/* Export Modal */}
+        {showExportModal && (
+          <ExportModal onClose={() => setShowExportModal(false)} />
         )}
       </main>
     </div>

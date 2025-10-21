@@ -26,6 +26,7 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/todos', require('./routes/todos'));
 app.use('/api/ai', require('./routes/ai'));
 app.use('/api/shared-lists', require('./routes/sharedLists'));
+app.use('/api/analytics', require('./routes/analytics'));
 
 // Basic test route
 app.get('/', (req, res) => {
