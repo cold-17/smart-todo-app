@@ -3,17 +3,20 @@ import { useTodos } from '../../context/TodoContext';
 import TodoItem from './TodoItem';
 
 const TodoList = () => {
-  const { todos, loading, error, fetchTodos } = useTodos();
+  const { todos, loading, error, fetchTodos, updateTodo, deleteTodo } = useTodos();
   const [filters, setFilters] = useState({
     category: 'all',
     completed: undefined,
     priority: 'all'
   });
   const [searchQuery, setSearchQuery] = useState('');
+  const [sortBy, setSortBy] = useState('createdAt');
+  const [selectedTodos, setSelectedTodos] = useState(new Set());
+  const [bulkMode, setBulkMode] = useState(false);
 
   useEffect(() => {
     fetchTodos(filters);
-  }, [filters]);
+  }, [filters, fetchTodos]);
 
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => ({
@@ -22,16 +25,84 @@ const TodoList = () => {
     }));
   };
 
-  // Filter todos based on search query
-  const filteredTodos = todos.filter(todo => {
-    if (!searchQuery.trim()) return true;
+  const toggleSelectTodo = (todoId) => {
+    const newSelected = new Set(selectedTodos);
+    if (newSelected.has(todoId)) {
+      newSelected.delete(todoId);
+    } else {
+      newSelected.add(todoId);
+    }
+    setSelectedTodos(newSelected);
+  };
 
-    const query = searchQuery.toLowerCase();
-    const titleMatch = todo.title.toLowerCase().includes(query);
-    const descriptionMatch = todo.description?.toLowerCase().includes(query) || false;
+  const selectAll = () => {
+    const allIds = new Set(filteredAndSortedTodos.map(t => t._id));
+    setSelectedTodos(allIds);
+  };
 
-    return titleMatch || descriptionMatch;
-  });
+  const deselectAll = () => {
+    setSelectedTodos(new Set());
+  };
+
+  const handleBulkComplete = async () => {
+    for (const todoId of selectedTodos) {
+      await updateTodo(todoId, { completed: true });
+    }
+    deselectAll();
+  };
+
+  const handleBulkDelete = async () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedTodos.size} todos?`)) {
+      for (const todoId of selectedTodos) {
+        await deleteTodo(todoId);
+      }
+      deselectAll();
+    }
+  };
+
+  const handleDeleteCompleted = async () => {
+    const completedTodos = todos.filter(t => t.completed);
+    if (completedTodos.length === 0) return;
+
+    if (window.confirm(`Are you sure you want to delete ${completedTodos.length} completed todos?`)) {
+      for (const todo of completedTodos) {
+        await deleteTodo(todo._id);
+      }
+    }
+  };
+
+  // Filter and sort todos
+  const filteredAndSortedTodos = todos
+    .filter(todo => {
+      if (!searchQuery.trim()) return true;
+
+      const query = searchQuery.toLowerCase();
+      const titleMatch = todo.title.toLowerCase().includes(query);
+      const descriptionMatch = todo.description?.toLowerCase().includes(query) || false;
+
+      return titleMatch || descriptionMatch;
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case 'priority': {
+          const priorityOrder = { urgent: 0, high: 1, medium: 2, low: 3 };
+          return priorityOrder[a.priority] - priorityOrder[b.priority];
+        }
+        case 'dueDate': {
+          if (!a.dueDate && !b.dueDate) return 0;
+          if (!a.dueDate) return 1;
+          if (!b.dueDate) return -1;
+          return new Date(a.dueDate) - new Date(b.dueDate);
+        }
+        case 'category':
+          return a.category.localeCompare(b.category);
+        case 'title':
+          return a.title.localeCompare(b.title);
+        case 'createdAt':
+        default:
+          return new Date(b.createdAt) - new Date(a.createdAt);
+      }
+    });
 
   if (loading) {
     return (
@@ -124,6 +195,21 @@ const TodoList = () => {
               <option value="low">Low</option>
             </select>
           </div>
+
+          <div>
+            <label className="block text-xs text-gray-500 mb-1">Sort By</label>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="text-sm border border-gray-300 rounded px-2 py-1"
+            >
+              <option value="createdAt">Created Date (Newest)</option>
+              <option value="dueDate">Due Date</option>
+              <option value="priority">Priority</option>
+              <option value="category">Category</option>
+              <option value="title">Title (A-Z)</option>
+            </select>
+          </div>
         </div>
       </div>
 
@@ -134,9 +220,73 @@ const TodoList = () => {
         </div>
       )}
 
+      {/* Bulk Actions Bar */}
+      <div className="bg-white rounded-lg border p-3 flex items-center justify-between flex-wrap gap-2">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => {
+              setBulkMode(!bulkMode);
+              if (bulkMode) deselectAll();
+            }}
+            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+              bulkMode
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            {bulkMode ? 'Exit Bulk Mode' : 'Bulk Select'}
+          </button>
+
+          {bulkMode && (
+            <>
+              <button
+                onClick={selectAll}
+                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200"
+              >
+                Select All
+              </button>
+              <button
+                onClick={deselectAll}
+                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200"
+              >
+                Deselect All
+              </button>
+              <span className="text-sm text-gray-600">
+                {selectedTodos.size} selected
+              </span>
+            </>
+          )}
+        </div>
+
+        <div className="flex items-center gap-2">
+          {bulkMode && selectedTodos.size > 0 && (
+            <>
+              <button
+                onClick={handleBulkComplete}
+                className="px-3 py-1.5 bg-green-600 text-white rounded-md text-sm hover:bg-green-700"
+              >
+                Complete Selected
+              </button>
+              <button
+                onClick={handleBulkDelete}
+                className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm hover:bg-red-700"
+              >
+                Delete Selected
+              </button>
+            </>
+          )}
+          <button
+            onClick={handleDeleteCompleted}
+            className="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm hover:bg-gray-700"
+          >
+            Clear Completed
+          </button>
+        </div>
+      </div>
+
       {/* Todo List */}
       <div className="space-y-3">
-        {filteredTodos.length === 0 ? (
+        {filteredAndSortedTodos.length === 0 ? (
           <div className="text-center py-8">
             <div className="text-gray-400 mb-2">
               <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -154,8 +304,14 @@ const TodoList = () => {
             </p>
           </div>
         ) : (
-          filteredTodos.map(todo => (
-            <TodoItem key={todo._id} todo={todo} />
+          filteredAndSortedTodos.map(todo => (
+            <TodoItem
+              key={todo._id}
+              todo={todo}
+              bulkMode={bulkMode}
+              isSelected={selectedTodos.has(todo._id)}
+              onToggleSelect={() => toggleSelectTodo(todo._id)}
+            />
           ))
         )}
       </div>

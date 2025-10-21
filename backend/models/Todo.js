@@ -36,7 +36,23 @@ const TodoSchema = new mongoose.Schema({
   },
   completedAt: {
     type: Date
-  }
+  },
+  subtasks: [{
+    text: {
+      type: String,
+      required: true,
+      trim: true,
+      maxlength: 200
+    },
+    completed: {
+      type: Boolean,
+      default: false
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }]
 }, {
   timestamps: true
 });

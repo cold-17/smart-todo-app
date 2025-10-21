@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer } from 'react';
+import { createContext, useContext, useReducer, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
 
@@ -45,9 +45,9 @@ export const TodoProvider = ({ children }) => {
 
   const { isAuthenticated } = useAuth();
 
-  const fetchTodos = async (filters = {}) => {
+  const fetchTodos = useCallback(async (filters = {}) => {
     if (!isAuthenticated) return;
-    
+
     dispatch({ type: 'SET_LOADING', payload: true });
     try {
       const params = new URLSearchParams();
@@ -60,9 +60,9 @@ export const TodoProvider = ({ children }) => {
     } catch (error) {
       dispatch({ type: 'SET_ERROR', payload: error.response?.data?.message || 'Failed to fetch todos' });
     }
-  };
+  }, [isAuthenticated]);
 
-  const addTodo = async (todoData) => {
+  const addTodo = useCallback(async (todoData) => {
     try {
       const response = await axios.post('/todos', todoData);
       dispatch({ type: 'ADD_TODO', payload: response.data });
@@ -72,9 +72,9 @@ export const TodoProvider = ({ children }) => {
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
-  const updateTodo = async (id, updates) => {
+  const updateTodo = useCallback(async (id, updates) => {
     try {
       const response = await axios.put(`/todos/${id}`, updates);
       dispatch({ type: 'UPDATE_TODO', payload: response.data });
@@ -84,9 +84,9 @@ export const TodoProvider = ({ children }) => {
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
-  const deleteTodo = async (id) => {
+  const deleteTodo = useCallback(async (id) => {
     try {
       await axios.delete(`/todos/${id}`);
       dispatch({ type: 'DELETE_TODO', payload: id });
@@ -96,26 +96,26 @@ export const TodoProvider = ({ children }) => {
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
-  const toggleTodoComplete = async (id, completed) => {
+  const toggleTodoComplete = useCallback(async (id, completed) => {
     return await updateTodo(id, { completed });
-  };
+  }, [updateTodo]);
 
-  const fetchStats = async () => {
+  const fetchStats = useCallback(async () => {
     if (!isAuthenticated) return;
-    
+
     try {
       const response = await axios.get('/todos/stats');
       dispatch({ type: 'SET_STATS', payload: response.data });
     } catch (error) {
       console.error('Failed to fetch stats:', error);
     }
-  };
+  }, [isAuthenticated]);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatch({ type: 'CLEAR_ERROR' });
-  };
+  }, []);
 
   return (
     <TodoContext.Provider value={{

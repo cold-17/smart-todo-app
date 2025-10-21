@@ -1,4 +1,4 @@
-import { createContext, useContext, useReducer, useEffect } from 'react';
+import { createContext, useContext, useReducer, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
@@ -32,6 +32,20 @@ export const AuthProvider = ({ children }) => {
     error: null
   });
 
+  const loadUser = useCallback(async () => {
+    try {
+      const res = await axios.get('/auth/me');
+      dispatch({
+        type: 'LOGIN_SUCCESS',
+        payload: res.data.user,
+        token: localStorage.getItem('token')
+      });
+    } catch (error) {
+      localStorage.removeItem('token');
+      dispatch({ type: 'LOGOUT' });
+    }
+  }, []);
+
   // Set auth token in axios headers
   useEffect(() => {
     if (state.token) {
@@ -47,23 +61,9 @@ export const AuthProvider = ({ children }) => {
     if (token) {
       loadUser();
     }
-  }, []);
+  }, [loadUser]);
 
-  const loadUser = async () => {
-    try {
-      const res = await axios.get('/auth/me');
-      dispatch({
-        type: 'LOGIN_SUCCESS',
-        payload: res.data.user,
-        token: localStorage.getItem('token')
-      });
-    } catch (error) {
-      localStorage.removeItem('token');
-      dispatch({ type: 'LOGOUT' });
-    }
-  };
-
-  const login = async (email, password) => {
+  const login = useCallback(async (email, password) => {
     dispatch({ type: 'LOGIN_START' });
     try {
       const res = await axios.post('/auth/login', { email, password });
@@ -79,9 +79,9 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
-  const register = async (username, email, password) => {
+  const register = useCallback(async (username, email, password) => {
     dispatch({ type: 'LOGIN_START' });
     try {
       const res = await axios.post('/auth/register', { username, email, password });
@@ -97,16 +97,16 @@ export const AuthProvider = ({ children }) => {
       dispatch({ type: 'LOGIN_FAILURE', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  };
+  }, []);
 
-  const logout = () => {
+  const logout = useCallback(() => {
     localStorage.removeItem('token');
     dispatch({ type: 'LOGOUT' });
-  };
+  }, []);
 
-  const clearError = () => {
+  const clearError = useCallback(() => {
     dispatch({ type: 'CLEAR_ERROR' });
-  };
+  }, []);
 
   return (
     <AuthContext.Provider value={{
