@@ -6,6 +6,11 @@ const TodoSchema = new mongoose.Schema({
     ref: 'User',
     required: true
   },
+  sharedList: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'SharedList',
+    default: null
+  },
   title: {
     type: String,
     required: true,

@@ -62,11 +62,11 @@ router.post('/', async (req, res) => {
 // Update todo
 router.put('/:id', async (req, res) => {
   try {
-    const { title, description, category, priority, completed, dueDate } = req.body;
+    const { title, description, category, priority, completed, dueDate, subtasks } = req.body;
 
-    const todo = await Todo.findOne({ 
-      _id: req.params.id, 
-      user: req.user._id 
+    const todo = await Todo.findOne({
+      _id: req.params.id,
+      user: req.user._id
     });
 
     if (!todo) {
@@ -80,6 +80,7 @@ router.put('/:id', async (req, res) => {
     if (priority !== undefined) todo.priority = priority;
     if (completed !== undefined) todo.completed = completed;
     if (dueDate !== undefined) todo.dueDate = dueDate;
+    if (subtasks !== undefined) todo.subtasks = subtasks;
 
     await todo.save();
     res.json(todo);

@@ -1,6 +1,7 @@
-import { createContext, useContext, useReducer, useCallback } from 'react';
+import { createContext, useContext, useReducer, useCallback, useEffect } from 'react';
 import axios from 'axios';
 import { useAuth } from './AuthContext';
+import { useSocket } from './SocketContext';
 
 const TodoContext = createContext();
 
@@ -44,6 +45,17 @@ export const TodoProvider = ({ children }) => {
   });
 
   const { isAuthenticated } = useAuth();
+  const {
+    emitTodoCreated,
+    emitTodoUpdated,
+    emitTodoDeleted,
+    emitTodoToggled,
+    onTodoCreated,
+    onTodoUpdated,
+    onTodoDeleted,
+    onTodoToggled,
+    currentListId
+  } = useSocket();
 
   const fetchTodos = useCallback(async (filters = {}) => {
     if (!isAuthenticated) return;
@@ -66,37 +78,58 @@ export const TodoProvider = ({ children }) => {
     try {
       const response = await axios.post('/todos', todoData);
       dispatch({ type: 'ADD_TODO', payload: response.data });
+
+      // Emit socket event if in a shared list
+      if (response.data.sharedList) {
+        emitTodoCreated(response.data, response.data.sharedList);
+      }
+
       return { success: true };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to create todo';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  }, []);
+  }, [emitTodoCreated]);
 
   const updateTodo = useCallback(async (id, updates) => {
     try {
       const response = await axios.put(`/todos/${id}`, updates);
       dispatch({ type: 'UPDATE_TODO', payload: response.data });
+
+      // Emit socket event if in a shared list
+      if (response.data.sharedList) {
+        emitTodoUpdated(response.data, response.data.sharedList);
+      }
+
       return { success: true };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to update todo';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  }, []);
+  }, [emitTodoUpdated]);
 
   const deleteTodo = useCallback(async (id) => {
     try {
+      // Find the todo to get its sharedList before deleting
+      const todo = state.todos.find(t => t._id === id);
+
       await axios.delete(`/todos/${id}`);
       dispatch({ type: 'DELETE_TODO', payload: id });
+
+      // Emit socket event if in a shared list
+      if (todo?.sharedList) {
+        emitTodoDeleted(id, todo.sharedList);
+      }
+
       return { success: true };
     } catch (error) {
       const errorMessage = error.response?.data?.message || 'Failed to delete todo';
       dispatch({ type: 'SET_ERROR', payload: errorMessage });
       return { success: false, error: errorMessage };
     }
-  }, []);
+  }, [state.todos, emitTodoDeleted]);
 
   const toggleTodoComplete = useCallback(async (id, completed) => {
     return await updateTodo(id, { completed });
@@ -116,6 +149,42 @@ export const TodoProvider = ({ children }) => {
   const clearError = useCallback(() => {
     dispatch({ type: 'CLEAR_ERROR' });
   }, []);
+
+  // Listen for real-time todo events from other users
+  useEffect(() => {
+    if (!onTodoCreated || !onTodoUpdated || !onTodoDeleted || !onTodoToggled) return;
+
+    const cleanupCreated = onTodoCreated((data) => {
+      console.log('Todo created by', data.createdBy.username);
+      dispatch({ type: 'ADD_TODO', payload: data.todo });
+    });
+
+    const cleanupUpdated = onTodoUpdated((data) => {
+      console.log('Todo updated by', data.updatedBy.username);
+      dispatch({ type: 'UPDATE_TODO', payload: data.todo });
+    });
+
+    const cleanupDeleted = onTodoDeleted((data) => {
+      console.log('Todo deleted by', data.deletedBy.username);
+      dispatch({ type: 'DELETE_TODO', payload: data.todoId });
+    });
+
+    const cleanupToggled = onTodoToggled((data) => {
+      console.log('Todo toggled by', data.toggledBy.username);
+      // Update the todo's completed status
+      dispatch({
+        type: 'UPDATE_TODO',
+        payload: { _id: data.todoId, completed: data.completed }
+      });
+    });
+
+    return () => {
+      if (cleanupCreated) cleanupCreated();
+      if (cleanupUpdated) cleanupUpdated();
+      if (cleanupDeleted) cleanupDeleted();
+      if (cleanupToggled) cleanupToggled();
+    };
+  }, [onTodoCreated, onTodoUpdated, onTodoDeleted, onTodoToggled]);
 
   return (
     <TodoContext.Provider value={{

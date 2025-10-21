@@ -7,8 +7,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 Smart ToDo App is a full-stack todo application with JWT authentication and productivity tracking. The application uses a monorepo structure with separate frontend and backend directories.
 
 **Tech Stack:**
-- Frontend: React 19 + Vite, Tailwind CSS, React Router, Axios
-- Backend: Node.js + Express 5, MongoDB + Mongoose, JWT auth, bcryptjs
+- Frontend: React 19 + Vite, Tailwind CSS, React Router, Axios, Socket.io Client
+- Backend: Node.js + Express 5, MongoDB + Mongoose, JWT auth, bcryptjs, Socket.io
+- AI: OpenAI GPT-4 for natural language task parsing and smart features
+- Real-time: Socket.io for live collaboration and presence tracking
 
 ## Development Commands
 
@@ -42,26 +44,39 @@ npm run preview # Preview production build
 - Backend auth middleware (`backend/middleware/authMiddleware.js`) validates JWT on protected routes
 
 ### State Management
-Two React Context providers wrap the entire app:
+Multiple React Context providers wrap the entire app:
 - **AuthContext**: Manages user authentication, login/register/logout, token persistence
-- **TodoContext**: Manages todo CRUD operations, filtering, and statistics
+- **TodoContext**: Manages todo CRUD operations, filtering, statistics, and real-time sync
+- **ThemeContext**: Manages dark mode with localStorage persistence
+- **SocketContext**: Manages WebSocket connections, room management, presence tracking
+- **ToastProvider**: Global toast notifications with auto-dismiss
 
-Both contexts use useReducer pattern for state management and provide custom hooks (`useAuth`, `useTodos`).
+All contexts use useReducer pattern and provide custom hooks (`useAuth`, `useTodos`, `useTheme`, `useSocket`, `useToast`).
 
 ### API Communication
 - Axios configured with base URL `http://localhost:5000/api` in AuthContext
 - Authorization header automatically set when token exists
-- All todo routes (`/api/todos/*`) require authentication
+- All todo routes (`/api/todos/*`) and AI routes (`/api/ai/*`) require authentication
 - Auth routes: `/api/auth/register`, `/api/auth/login`, `/api/auth/me`
+- AI routes: `/api/ai/parse-task`, `/api/ai/suggest-priority`, `/api/ai/decompose-task`, `/api/ai/categorize-task`
 
 ### Data Model
 Todo schema (`backend/models/Todo.js`):
 - User reference (required)
+- SharedList reference (optional) - links todo to a collaborative list
 - Title (max 200 chars), description (max 1000 chars)
 - Category: `work | personal | health | learning | urgent | general`
 - Priority: `low | medium | high | urgent`
 - Boolean `completed` flag with auto-tracking of `completedAt` timestamp
 - Optional `dueDate`
+- Subtasks array: `[{ text, completed, createdAt }]`
+
+SharedList schema (`backend/models/SharedList.js`):
+- Name (max 100 chars)
+- Owner reference (required)
+- Members array: `[{ user, addedAt, role }]` where role is `owner | editor | viewer`
+- Pending invites array: `[{ email, invitedAt, invitedBy }]`
+- Helper methods: `isMember()`, `getUserRole()`, `canEdit()`
 
 ### Routing Structure
 Frontend routes (React Router v7):
@@ -74,6 +89,15 @@ Backend routes:
 - `/api/todos` → GET (with query filters), POST
 - `/api/todos/:id` → PUT, DELETE
 - `/api/todos/stats` → GET todo statistics (total, completed, pending, overdue, by category)
+- `/api/ai/parse-task` → POST natural language task parsing (requires OPENAI_API_KEY)
+- `/api/ai/suggest-priority` → POST priority suggestion based on task content
+- `/api/ai/decompose-task` → POST task decomposition into subtasks
+- `/api/ai/categorize-task` → POST auto-categorization
+- `/api/shared-lists` → GET all shared lists, POST create new list
+- `/api/shared-lists/:id` → GET specific list, DELETE list
+- `/api/shared-lists/:id/invite` → POST invite user by email
+- `/api/shared-lists/:id/members/:userId` → DELETE remove member
+- `/api/shared-lists/:id/todos` → GET todos for a shared list
 
 ### Todo Filtering
 Backend supports query parameters:
@@ -90,9 +114,37 @@ TodoContext's `fetchTodos()` constructs URLSearchParams from filter object.
 - User model includes username, email, password (hashed with bcryptjs)
 
 ## Environment Variables
-Backend requires:
+Backend requires (create `/backend/.env` file):
 - `MONGODB_URI`: MongoDB connection string
 - `JWT_SECRET`: Secret for signing JWT tokens
 - `PORT`: Backend port (defaults to 5000)
+- `OPENAI_API_KEY`: OpenAI API key for AI features (optional, but required for smart task parsing)
 
-Frontend hardcodes backend URL as `http://localhost:5000/api` in AuthContext.
+Frontend hardcodes backend URL as `http://localhost:5000/api` in AuthContext and useAI hook.
+
+## AI Features
+The Smart Add Todo Form includes AI-powered features:
+- **Natural Language Parsing**: Type tasks like "Finish the marketing report by Friday" and AI extracts title, category, priority, and due date
+- **Smart Subtask Generation**: AI automatically breaks down complex tasks into actionable subtasks
+- **Auto-Categorization**: AI suggests the most appropriate category based on task content
+- **Priority Suggestion**: AI recommends priority level based on keywords and urgency
+
+AI features require a valid OpenAI API key in the backend `.env` file. The app gracefully falls back to manual mode if the API key is not configured.
+
+## Key Features
+- JWT authentication with protected routes
+- Dark mode support with system preference detection
+- Toast notifications for user feedback
+- Subtasks with progress tracking
+- Bulk actions (select multiple, complete/delete all)
+- Advanced filtering and sorting (by priority, due date, category, title)
+- Overdue task highlighting
+- Statistics dashboard (total, completed, pending, completion rate)
+- AI-powered task creation and management
+- **Real-time Collaboration**:
+  - Create shared todo lists
+  - Invite team members by email
+  - Live presence indicators (see who's online)
+  - Real-time sync of todo changes across all connected users
+  - Role-based access control (owner/editor/viewer)
+  - WebSocket connection with JWT authentication

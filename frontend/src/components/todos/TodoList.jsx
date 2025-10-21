@@ -113,10 +113,12 @@ const TodoList = () => {
   }
 
   return (
-    <div className="space-y-4">
-      {/* Search and Filters */}
-      <div className="bg-white rounded-lg border p-4">
-        <h3 className="text-sm font-medium text-gray-700 mb-3">Search & Filters</h3>
+    <div className="space-y-0">
+      {/* Search and Filters - Clean Apple Style */}
+      <div className="bg-gray-50 dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 p-6">
+        <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4">
+          Filters
+        </h3>
 
         {/* Search Bar */}
         <div className="mb-4">
@@ -220,38 +222,38 @@ const TodoList = () => {
         </div>
       )}
 
-      {/* Bulk Actions Bar */}
-      <div className="bg-white rounded-lg border p-3 flex items-center justify-between flex-wrap gap-2">
+      {/* Bulk Actions Bar - Minimal */}
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
           <button
             onClick={() => {
               setBulkMode(!bulkMode);
               if (bulkMode) deselectAll();
             }}
-            className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
+            className={`h-8 px-3 rounded-full text-xs font-semibold transition-all ${
               bulkMode
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                ? 'bg-blue-600 text-white shadow-sm'
+                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
             }`}
           >
-            {bulkMode ? 'Exit Bulk Mode' : 'Bulk Select'}
+            {bulkMode ? 'Done' : 'Select'}
           </button>
 
           {bulkMode && (
             <>
               <button
                 onClick={selectAll}
-                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200"
+                className="h-8 px-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
-                Select All
+                All
               </button>
               <button
                 onClick={deselectAll}
-                className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm hover:bg-gray-200"
+                className="h-8 px-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
-                Deselect All
+                None
               </button>
-              <span className="text-sm text-gray-600">
+              <span className="text-xs text-gray-500 dark:text-gray-400 font-medium ml-1">
                 {selectedTodos.size} selected
               </span>
             </>
@@ -263,44 +265,43 @@ const TodoList = () => {
             <>
               <button
                 onClick={handleBulkComplete}
-                className="px-3 py-1.5 bg-green-600 text-white rounded-md text-sm hover:bg-green-700"
+                className="h-8 px-3 bg-green-600 text-white rounded-full text-xs font-semibold hover:bg-green-700 transition-colors shadow-sm"
               >
-                Complete Selected
+                Complete
               </button>
               <button
                 onClick={handleBulkDelete}
-                className="px-3 py-1.5 bg-red-600 text-white rounded-md text-sm hover:bg-red-700"
+                className="h-8 px-3 bg-red-600 text-white rounded-full text-xs font-semibold hover:bg-red-700 transition-colors shadow-sm"
               >
-                Delete Selected
+                Delete
               </button>
             </>
           )}
           <button
             onClick={handleDeleteCompleted}
-            className="px-3 py-1.5 bg-gray-600 text-white rounded-md text-sm hover:bg-gray-700"
+            className="h-8 px-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            Clear Completed
+            Clear Done
           </button>
         </div>
       </div>
 
       {/* Todo List */}
-      <div className="space-y-3">
+      <div className="p-6 space-y-3">
         {filteredAndSortedTodos.length === 0 ? (
-          <div className="text-center py-8">
-            <div className="text-gray-400 mb-2">
-              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+          <div className="text-center py-16">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+              <svg className="w-8 h-8 text-gray-400 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">
-              {searchQuery.trim() ? 'No matching todos found' : 'No todos found'}
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              {searchQuery.trim() ? 'No tasks found' : 'No tasks yet'}
             </h3>
-            <p className="text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {searchQuery.trim()
                 ? 'Try adjusting your search or filters'
-                : 'Get started by creating your first todo!'
-              }
+                : 'Create your first task to get started'}
             </p>
           </div>
         ) : (

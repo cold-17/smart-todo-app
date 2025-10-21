@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { TodoProvider } from './context/TodoContext';
 import { ThemeProvider } from './context/ThemeContext';
+import { SocketProvider } from './context/SocketContext';
 import { ToastProvider } from './components/common/ToastContainer';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -48,39 +49,41 @@ function App() {
     <ThemeProvider>
       <ToastProvider>
         <AuthProvider>
-          <TodoProvider>
-            <Router>
-              <div className="App">
-                <Routes>
-                  <Route
-                    path="/login"
-                    element={
-                      <PublicRoute>
-                        <Login />
-                      </PublicRoute>
-                    }
-                  />
-                  <Route
-                    path="/register"
-                    element={
-                      <PublicRoute>
-                        <Register />
-                      </PublicRoute>
-                    }
-                  />
-                  <Route
-                    path="/dashboard"
-                    element={
-                      <ProtectedRoute>
-                        <Dashboard />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route path="/" element={<Navigate to="/dashboard" />} />
-                </Routes>
-              </div>
-            </Router>
-          </TodoProvider>
+          <SocketProvider>
+            <TodoProvider>
+              <Router>
+                <div className="App">
+                  <Routes>
+                    <Route
+                      path="/login"
+                      element={
+                        <PublicRoute>
+                          <Login />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/register"
+                      element={
+                        <PublicRoute>
+                          <Register />
+                        </PublicRoute>
+                      }
+                    />
+                    <Route
+                      path="/dashboard"
+                      element={
+                        <ProtectedRoute>
+                          <Dashboard />
+                        </ProtectedRoute>
+                      }
+                    />
+                    <Route path="/" element={<Navigate to="/dashboard" />} />
+                  </Routes>
+                </div>
+              </Router>
+            </TodoProvider>
+          </SocketProvider>
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
