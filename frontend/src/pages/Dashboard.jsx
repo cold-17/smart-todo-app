@@ -8,6 +8,7 @@ import SmartAddTodoForm from '../components/todos/SmartAddTodoForm';
 import ShareModal from '../components/collaboration/ShareModal';
 import FocusMode from '../components/productivity/FocusMode';
 import ExportModal from '../components/common/ExportModal';
+import KeyboardShortcutsPanel from '../components/common/KeyboardShortcutsPanel';
 
 const Dashboard = () => {
   const { user, logout } = useAuth();
@@ -18,11 +19,49 @@ const Dashboard = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showFocusMode, setShowFocusMode] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
   const [activeFilter, setActiveFilter] = useState(null);
 
   useEffect(() => {
     fetchStats();
   }, [fetchStats]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      // Don't trigger if user is typing in an input
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+      switch (e.key) {
+        case '?':
+          setShowShortcuts(true);
+          break;
+        case 'n':
+        case 'N':
+          setShowAddForm(true);
+          break;
+        case 'f':
+        case 'F':
+          setShowFocusMode(true);
+          break;
+        case '/':
+          e.preventDefault();
+          document.querySelector('input[type="text"]')?.focus();
+          break;
+        case 'Escape':
+          setShowShortcuts(false);
+          setShowAddForm(false);
+          setShowShareModal(false);
+          setShowExportModal(false);
+          break;
+        default:
+          break;
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -301,6 +340,12 @@ const Dashboard = () => {
         {showExportModal && (
           <ExportModal onClose={() => setShowExportModal(false)} />
         )}
+
+        {/* Keyboard Shortcuts Panel */}
+        <KeyboardShortcutsPanel
+          isOpen={showShortcuts}
+          onClose={() => setShowShortcuts(false)}
+        />
       </main>
     </div>
   );

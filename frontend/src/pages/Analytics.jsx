@@ -112,17 +112,17 @@ const Analytics = () => {
 
             {/* Time Range Selector */}
             <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 rounded-full p-1">
-              {[7, 30, 90].map(days => (
+              {[7, 30, 90, 'all'].map(range => (
                 <button
-                  key={days}
-                  onClick={() => setTimeRange(days)}
+                  key={range}
+                  onClick={() => setTimeRange(range)}
                   className={`px-3 py-1 text-xs font-medium rounded-full transition-all ${
-                    timeRange === days
+                    timeRange === range
                       ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
                       : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
                   }`}
                 >
-                  {days}d
+                  {range === 'all' ? 'All Time' : `${range}d`}
                 </button>
               ))}
             </div>

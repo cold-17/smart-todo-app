@@ -11,10 +11,13 @@ router.use(authMiddleware);
 router.get('/', async (req, res) => {
   try {
     const userId = req.user._id;
-    const { days = 30 } = req.query; // Default to 30 days
+    const { days = 30 } = req.query; // Default to 30 days, or 'all' for all time
+
+    const isAllTime = days === 'all';
+    const dayCount = isAllTime ? 365 : parseInt(days); // Default to 1 year for 'all time' charts
 
     const daysAgo = new Date();
-    daysAgo.setDate(daysAgo.getDate() - parseInt(days));
+    daysAgo.setDate(daysAgo.getDate() - dayCount);
 
     // Get all todos for the user
     const todos = await Todo.find({ user: userId });
@@ -47,7 +50,7 @@ router.get('/', async (req, res) => {
 
     // Daily completion trend (last N days)
     const dailyTrends = [];
-    for (let i = parseInt(days) - 1; i >= 0; i--) {
+    for (let i = dayCount - 1; i >= 0; i--) {
       const date = new Date();
       date.setDate(date.getDate() - i);
       date.setHours(0, 0, 0, 0);
