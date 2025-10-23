@@ -6,7 +6,7 @@ import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSo
 import { SortableTodoItem } from './SortableTodoItem';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const EnhancedTodoList = () => {
+const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} }) => {
   const { todos, loading, error, fetchTodos, updateTodo, deleteTodo } = useTodos();
   const [filters, setFilters] = useState({
     category: 'all',
@@ -17,7 +17,10 @@ const EnhancedTodoList = () => {
   const [sortBy, setSortBy] = useState('createdAt');
   const [selectedTodos, setSelectedTodos] = useState(new Set());
   const [bulkMode, setBulkMode] = useState(false);
-  const [viewMode, setViewMode] = useState('list'); // list, grid, compact
+  const [viewMode, setViewMode] = useState(() => {
+    // Load from localStorage or default to 'list'
+    return localStorage.getItem('todoViewMode') || 'list';
+  });
   const [localTodos, setLocalTodos] = useState([]);
 
   const sensors = useSensors(
@@ -35,11 +38,26 @@ const EnhancedTodoList = () => {
     setLocalTodos(todos);
   }, [todos]);
 
+  // Persist view mode to localStorage
+  useEffect(() => {
+    localStorage.setItem('todoViewMode', viewMode);
+  }, [viewMode]);
+
   const handleFilterChange = (filterType, value) => {
     setFilters(prev => ({
       ...prev,
       [filterType]: value
     }));
+  };
+
+  const clearAllFilters = () => {
+    setFilters({
+      category: 'all',
+      completed: undefined,
+      priority: 'all'
+    });
+    setSearchQuery('');
+    onClearQuickFilter();
   };
 
   const toggleSelectTodo = (todoId) => {
@@ -103,13 +121,34 @@ const EnhancedTodoList = () => {
   // Filter and sort todos
   const filteredAndSortedTodos = localTodos
     .filter(todo => {
+      // Apply quick filter from stat cards
+      if (quickFilter === 'completed' && !todo.completed) return false;
+      if (quickFilter === 'active' && todo.completed) return false;
+      if (quickFilter === 'dueToday') {
+        if (todo.completed) return false;
+        if (!todo.dueDate) return false;
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const todayEnd = new Date();
+        todayEnd.setHours(23, 59, 59, 999);
+        const dueDate = new Date(todo.dueDate);
+        if (dueDate < today || dueDate > todayEnd) return false;
+      }
+      // 'all' or null shows everything
+
+      // Apply search filter
       if (!searchQuery.trim()) return true;
 
       const query = searchQuery.toLowerCase();
       const titleMatch = todo.title.toLowerCase().includes(query);
       const descriptionMatch = todo.description?.toLowerCase().includes(query) || false;
 
-      return titleMatch || descriptionMatch;
+      // Also search in subtasks
+      const subtaskMatch = todo.subtasks?.some(subtask =>
+        subtask.text.toLowerCase().includes(query)
+      ) || false;
+
+      return titleMatch || descriptionMatch || subtaskMatch;
     })
     .sort((a, b) => {
       switch (sortBy) {
@@ -145,20 +184,61 @@ const EnhancedTodoList = () => {
     );
   }
 
+  // Check if any filters are active
+  const hasActiveFilters = filters.category !== 'all' || filters.completed !== undefined || filters.priority !== 'all' || searchQuery.trim() !== '' || quickFilter;
+  const activeFilterCount = [
+    filters.category !== 'all',
+    filters.completed !== undefined,
+    filters.priority !== 'all',
+    searchQuery.trim() !== '',
+    quickFilter
+  ].filter(Boolean).length;
+
   return (
     <div className="space-y-0">
-      {/* Search and Filters - Enhanced UI */}
-      <div className="bg-gradient-to-br from-gray-50 to-white dark:from-gray-950 dark:to-gray-900 border-b border-gray-200 dark:border-gray-800 p-6">
+      {/* Search and Filters - Simplified UI */}
+      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-6">
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            Filters & View
-          </h3>
+          <div className="flex items-center gap-2">
+            <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+              Filters & View
+            </h3>
+            {/* Active Filters Indicator */}
+            {hasActiveFilters && (
+              <>
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-full text-xs font-medium"
+                >
+                  <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M3 3a1 1 0 011-1h12a1 1 0 011 1v3a1 1 0 01-.293.707L12 11.414V15a1 1 0 01-.293.707l-2 2A1 1 0 018 17v-5.586L3.293 6.707A1 1 0 013 6V3z" clipRule="evenodd" />
+                  </svg>
+                  {activeFilterCount} active
+                </motion.span>
+                <motion.button
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={clearAllFilters}
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-xs font-medium transition-colors"
+                  title="Clear all filters"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                  Clear
+                </motion.button>
+              </>
+            )}
+          </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 bg-white dark:bg-gray-800 rounded-lg p-1 border border-gray-200 dark:border-gray-700">
+          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+              className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
               title="List view"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -167,7 +247,7 @@ const EnhancedTodoList = () => {
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
               title="Grid view"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -176,7 +256,7 @@ const EnhancedTodoList = () => {
             </button>
             <button
               onClick={() => setViewMode('compact')}
-              className={`p-1.5 rounded ${viewMode === 'compact' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600' : 'text-gray-400 hover:text-gray-600'} transition-colors`}
+              className={`p-1.5 rounded ${viewMode === 'compact' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
               title="Compact view"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

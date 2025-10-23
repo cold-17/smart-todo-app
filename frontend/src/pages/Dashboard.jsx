@@ -18,6 +18,7 @@ const Dashboard = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showFocusMode, setShowFocusMode] = useState(false);
   const [showExportModal, setShowExportModal] = useState(false);
+  const [activeFilter, setActiveFilter] = useState(null);
 
   useEffect(() => {
     fetchStats();
@@ -25,6 +26,15 @@ const Dashboard = () => {
 
   const handleLogout = () => {
     logout();
+  };
+
+  const handleStatCardClick = (filterType) => {
+    // Toggle filter - if clicking same filter, clear it
+    setActiveFilter(activeFilter === filterType ? null : filterType);
+  };
+
+  const clearQuickFilter = () => {
+    setActiveFilter(null);
   };
 
   return (
@@ -117,11 +127,18 @@ const Dashboard = () => {
       <div className="h-14"></div>
 
       <main className="max-w-7xl mx-auto py-8 px-6">
-        {/* Stats Cards - Clean Apple Style */}
+        {/* Stats Cards - Clean Apple Style - Now Interactive! */}
         {stats && (
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-10">
             {/* Total Tasks Card */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700 transition-all duration-200 cursor-pointer group">
+            <button
+              onClick={() => handleStatCardClick('all')}
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+                activeFilter === 'all'
+                  ? 'border-blue-500 dark:border-blue-500 ring-2 ring-blue-500/30'
+                  : 'border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700'
+              }`}
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -131,10 +148,18 @@ const Dashboard = () => {
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Total</p>
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.total}</p>
-            </div>
+              {activeFilter === 'all' && <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">Showing all tasks</p>}
+            </button>
 
             {/* Completed Card */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-700 transition-all duration-200 cursor-pointer group">
+            <button
+              onClick={() => handleStatCardClick('completed')}
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+                activeFilter === 'completed'
+                  ? 'border-green-500 dark:border-green-500 ring-2 ring-green-500/30'
+                  : 'border-gray-200 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-700'
+              }`}
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
@@ -144,10 +169,18 @@ const Dashboard = () => {
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Done</p>
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.completed}</p>
-            </div>
+              {activeFilter === 'completed' && <p className="text-xs text-green-600 dark:text-green-400 mt-2">Showing completed</p>}
+            </button>
 
             {/* Pending Card */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 hover:border-orange-300 dark:hover:border-orange-700 transition-all duration-200 cursor-pointer group">
+            <button
+              onClick={() => handleStatCardClick('active')}
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+                activeFilter === 'active'
+                  ? 'border-orange-500 dark:border-orange-500 ring-2 ring-orange-500/30'
+                  : 'border-gray-200 dark:border-gray-800 hover:border-orange-300 dark:hover:border-orange-700'
+              }`}
+            >
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 text-orange-600 dark:text-orange-400" fill="currentColor" viewBox="0 0 20 20">
@@ -157,10 +190,32 @@ const Dashboard = () => {
                 <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Active</p>
               </div>
               <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.pending}</p>
-            </div>
+              {activeFilter === 'active' && <p className="text-xs text-orange-600 dark:text-orange-400 mt-2">Showing active</p>}
+            </button>
+
+            {/* Due Today Card */}
+            <button
+              onClick={() => handleStatCardClick('dueToday')}
+              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+                activeFilter === 'dueToday'
+                  ? 'border-yellow-500 dark:border-yellow-500 ring-2 ring-yellow-500/30'
+                  : 'border-gray-200 dark:border-gray-800 hover:border-yellow-300 dark:hover:border-yellow-700'
+              }`}
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <svg className="w-5 h-5 text-yellow-600 dark:text-yellow-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                </div>
+                <p className="text-xs font-medium text-gray-500 dark:text-gray-400">Today</p>
+              </div>
+              <p className="text-3xl font-bold text-gray-900 dark:text-white">{stats.dueToday || 0}</p>
+              {activeFilter === 'dueToday' && <p className="text-xs text-yellow-600 dark:text-yellow-400 mt-2">Showing today</p>}
+            </button>
 
             {/* Success Rate Card */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 cursor-pointer group">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 group">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
@@ -224,7 +279,7 @@ const Dashboard = () => {
 
         {/* Todo List */}
         <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
-          <EnhancedTodoList />
+          <EnhancedTodoList quickFilter={activeFilter} onClearQuickFilter={clearQuickFilter} />
         </div>
 
         {/* Add Todo Form Modal */}

@@ -114,15 +114,26 @@ router.delete('/:id', async (req, res) => {
 router.get('/stats', async (req, res) => {
   try {
     const userId = req.user._id;
-    
-    const [total, completed, pending, overdue] = await Promise.all([
+
+    // Get start and end of today
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    const [total, completed, pending, overdue, dueToday] = await Promise.all([
       Todo.countDocuments({ user: userId }),
       Todo.countDocuments({ user: userId, completed: true }),
       Todo.countDocuments({ user: userId, completed: false }),
-      Todo.countDocuments({ 
-        user: userId, 
-        completed: false, 
-        dueDate: { $lt: new Date() }
+      Todo.countDocuments({
+        user: userId,
+        completed: false,
+        dueDate: { $lt: todayStart }
+      }),
+      Todo.countDocuments({
+        user: userId,
+        completed: false,
+        dueDate: { $gte: todayStart, $lte: todayEnd }
       })
     ]);
 
@@ -141,6 +152,7 @@ router.get('/stats', async (req, res) => {
       completed,
       pending,
       overdue,
+      dueToday,
       completionRate: total > 0 ? Math.round((completed / total) * 100) : 0,
       byCategory: categoryStats
     });
