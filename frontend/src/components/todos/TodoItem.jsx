@@ -146,13 +146,27 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
           {/* Content */}
           <div className="flex-1 min-w-0">
             {/* Title */}
-            <h3 className={`text-lg font-semibold mb-1 transition-all ${
-              todo.completed
-                ? 'line-through text-gray-400 dark:text-gray-600'
-                : 'text-gray-900 dark:text-gray-100'
-            }`}>
-              {todo.title}
-            </h3>
+            <div className="flex items-center gap-2 mb-1">
+              <h3 className={`text-lg font-semibold transition-all ${
+                todo.completed
+                  ? 'line-through text-gray-400 dark:text-gray-600'
+                  : 'text-gray-900 dark:text-gray-100'
+              }`}>
+                {todo.title}
+              </h3>
+              {/* Recurring Badge */}
+              {todo.recurrence?.enabled && (
+                <span
+                  className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded-md border border-blue-300 dark:border-blue-800"
+                  title="Recurring task"
+                >
+                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                  Repeats
+                </span>
+              )}
+            </div>
 
             {/* Description */}
             {todo.description && (

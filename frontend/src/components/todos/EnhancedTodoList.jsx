@@ -330,7 +330,6 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
               <option value="personal">Personal</option>
               <option value="health">Health</option>
               <option value="learning">Learning</option>
-              <option value="urgent">Urgent</option>
               <option value="general">General</option>
             </select>
           </div>

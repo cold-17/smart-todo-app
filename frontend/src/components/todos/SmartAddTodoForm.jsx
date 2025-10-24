@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTodos } from '../../context/TodoContext';
 import { useAI } from '../../hooks/useAI';
+import RecurrenceSelector from './RecurrenceSelector';
 
 const SmartAddTodoForm = ({ onClose }) => {
   const [formData, setFormData] = useState({
@@ -14,6 +15,7 @@ const SmartAddTodoForm = ({ onClose }) => {
   const [isSmartMode, setIsSmartMode] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [suggestedSubtasks, setSuggestedSubtasks] = useState([]);
+  const [recurrence, setRecurrence] = useState(null);
   const { addTodo } = useTodos();
   const { parseTask, decomposeTask, loading: aiLoading, error: aiError } = useAI();
 
@@ -32,7 +34,8 @@ const SmartAddTodoForm = ({ onClose }) => {
     const result = await addTodo({
       ...formData,
       dueDate: formData.dueDate || null,
-      subtasks: subtasksToAdd.length > 0 ? subtasksToAdd : undefined
+      subtasks: subtasksToAdd.length > 0 ? subtasksToAdd : undefined,
+      recurrence: recurrence?.enabled ? recurrence : undefined
     });
 
     if (result.success) {
@@ -45,6 +48,7 @@ const SmartAddTodoForm = ({ onClose }) => {
       });
       setNaturalInput('');
       setSuggestedSubtasks([]);
+      setRecurrence(null);
       onClose?.();
     }
     setIsSubmitting(false);
@@ -251,7 +255,6 @@ const SmartAddTodoForm = ({ onClose }) => {
                     <option value="personal">Personal</option>
                     <option value="health">Health</option>
                     <option value="learning">Learning</option>
-                    <option value="urgent">Urgent</option>
                   </select>
                 </div>
 
@@ -325,6 +328,14 @@ const SmartAddTodoForm = ({ onClose }) => {
                     ))}
                   </div>
                 )}
+              </div>
+
+              {/* Recurrence Selector */}
+              <div>
+                <RecurrenceSelector
+                  value={recurrence}
+                  onChange={setRecurrence}
+                />
               </div>
             </>
           )}

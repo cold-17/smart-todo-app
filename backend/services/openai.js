@@ -28,7 +28,7 @@ async function parseTask(input) {
 Return JSON with:
 - title: concise task title (max 100 chars)
 - description: detailed description (optional)
-- category: one of [work, personal, health, learning, urgent, general]
+- category: one of [work, personal, health, learning, general]
 - priority: one of [urgent, high, medium, low]
 - dueDate: ISO date string if mentioned, null otherwise
 - subtasks: array of subtask strings if the task can be broken down
@@ -36,7 +36,7 @@ Return JSON with:
 Examples:
 "Finish the marketing report by Friday" → {"title": "Finish marketing report", "category": "work", "priority": "high", "dueDate": "2025-10-24T00:00:00.000Z"}
 "Buy groceries - milk, eggs, bread" → {"title": "Buy groceries", "category": "personal", "priority": "medium", "subtasks": ["Get milk", "Get eggs", "Get bread"]}
-"URGENT: Fix production bug" → {"title": "Fix production bug", "category": "urgent", "priority": "urgent"}`
+"URGENT: Fix production bug" → {"title": "Fix production bug", "category": "work", "priority": "urgent"}`
         },
         {
           role: "user",
@@ -50,7 +50,7 @@ Examples:
     const parsed = JSON.parse(completion.choices[0].message.content);
 
     // Ensure valid category and priority
-    const validCategories = ['work', 'personal', 'health', 'learning', 'urgent', 'general'];
+    const validCategories = ['work', 'personal', 'health', 'learning', 'general'];
     const validPriorities = ['urgent', 'high', 'medium', 'low'];
 
     if (!validCategories.includes(parsed.category)) {
@@ -179,14 +179,13 @@ async function categorizeTask(title, description = '') {
           content: `You are a task categorization expert. Categorize tasks into the most appropriate category.
 
 Return JSON with:
-- category: one of [work, personal, health, learning, urgent, general]
+- category: one of [work, personal, health, learning, general]
 
 Examples:
 - "Team meeting" → work
 - "Buy groceries" → personal
 - "Go to gym" → health
 - "Read React documentation" → learning
-- "URGENT: Server down" → urgent
 - "Miscellaneous task" → general`
         },
         {

@@ -4,10 +4,13 @@ import { TodoProvider } from './context/TodoContext';
 import { ThemeProvider } from './context/ThemeContext';
 import { SocketProvider } from './context/SocketContext';
 import { ToastProvider } from './components/common/ToastContainer';
+import ErrorBoundary from './components/common/ErrorBoundary';
+import PWAUpdatePrompt from './components/common/PWAUpdatePrompt';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Analytics from './pages/Analytics';
+import NotFound from './pages/NotFound';
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -47,14 +50,15 @@ const PublicRoute = ({ children }) => {
 
 function App() {
   return (
-    <ThemeProvider>
-      <ToastProvider>
-        <AuthProvider>
-          <SocketProvider>
-            <TodoProvider>
-              <Router>
-                <div className="App">
-                  <Routes>
+    <ErrorBoundary>
+      <ThemeProvider>
+        <ToastProvider>
+          <AuthProvider>
+            <SocketProvider>
+              <TodoProvider>
+                <Router>
+                  <div className="App">
+                    <Routes>
                     <Route
                       path="/login"
                       element={
@@ -88,7 +92,9 @@ function App() {
                       }
                     />
                     <Route path="/" element={<Navigate to="/dashboard" />} />
+                    <Route path="*" element={<NotFound />} />
                   </Routes>
+                  <PWAUpdatePrompt />
                 </div>
               </Router>
             </TodoProvider>
@@ -96,6 +102,7 @@ function App() {
         </AuthProvider>
       </ToastProvider>
     </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

@@ -24,7 +24,7 @@ const TodoSchema = new mongoose.Schema({
   },
   category: {
     type: String,
-    enum: ['work', 'personal', 'health', 'learning', 'urgent', 'general'],
+    enum: ['work', 'personal', 'health', 'learning', 'general'],
     default: 'general'
   },
   priority: {
@@ -57,7 +57,51 @@ const TodoSchema = new mongoose.Schema({
       type: Date,
       default: Date.now
     }
-  }]
+  }],
+  recurrence: {
+    enabled: {
+      type: Boolean,
+      default: false
+    },
+    pattern: {
+      type: String,
+      enum: ['daily', 'weekly', 'monthly', 'yearly', 'custom'],
+      default: 'daily'
+    },
+    interval: {
+      type: Number,
+      default: 1,
+      min: 1
+    },
+    daysOfWeek: [{
+      type: Number,
+      min: 0,
+      max: 6
+    }],
+    dayOfMonth: {
+      type: Number,
+      min: 1,
+      max: 31
+    },
+    endDate: {
+      type: Date
+    },
+    lastCreated: {
+      type: Date
+    },
+    nextDue: {
+      type: Date
+    }
+  },
+  isRecurringInstance: {
+    type: Boolean,
+    default: false
+  },
+  recurringParent: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Todo',
+    default: null
+  }
 }, {
   timestamps: true
 });

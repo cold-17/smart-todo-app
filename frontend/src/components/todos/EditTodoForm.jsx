@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useTodos } from '../../context/TodoContext';
+import RecurrenceSelector from './RecurrenceSelector';
 
 const EditTodoForm = ({ todo, onClose }) => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,7 @@ const EditTodoForm = ({ todo, onClose }) => {
     priority: todo.priority,
     dueDate: todo.dueDate ? new Date(todo.dueDate).toISOString().split('T')[0] : ''
   });
+  const [recurrence, setRecurrence] = useState(todo.recurrence || null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { updateTodo } = useTodos();
 
@@ -19,7 +21,8 @@ const EditTodoForm = ({ todo, onClose }) => {
     setIsSubmitting(true);
     const result = await updateTodo(todo._id, {
       ...formData,
-      dueDate: formData.dueDate || null
+      dueDate: formData.dueDate || null,
+      recurrence: recurrence?.enabled ? recurrence : undefined
     });
 
     if (result.success) {
@@ -100,7 +103,6 @@ const EditTodoForm = ({ todo, onClose }) => {
                 <option value="personal">Personal</option>
                 <option value="health">Health</option>
                 <option value="learning">Learning</option>
-                <option value="urgent">Urgent</option>
               </select>
             </div>
 
@@ -134,6 +136,14 @@ const EditTodoForm = ({ todo, onClose }) => {
               value={formData.dueDate}
               onChange={handleChange}
               className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+          </div>
+
+          {/* Recurrence Selector */}
+          <div>
+            <RecurrenceSelector
+              value={recurrence}
+              onChange={setRecurrence}
             />
           </div>
 
