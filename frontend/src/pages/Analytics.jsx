@@ -91,9 +91,9 @@ const Analytics = () => {
   const heatmapData = analytics.trends.heatmap.slice(-84); // Last 12 weeks
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl border-b border-gray-200/20 dark:border-gray-800/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-b border-stone-200/30 dark:border-slate-800/30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-14">
             <div className="flex items-center gap-4">
@@ -170,7 +170,7 @@ const Analytics = () => {
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           {/* Daily Trends Chart */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Daily Activity
             </h3>
@@ -216,7 +216,7 @@ const Analytics = () => {
           </div>
 
           {/* Category Breakdown */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Tasks by Category
             </h3>
@@ -248,7 +248,7 @@ const Analytics = () => {
           </div>
 
           {/* Priority Distribution */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Priority Distribution
             </h3>
@@ -281,7 +281,7 @@ const Analytics = () => {
           </div>
 
           {/* Productivity Heatmap */}
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
               Activity Heatmap (Last 12 Weeks)
             </h3>
@@ -308,7 +308,7 @@ const Analytics = () => {
 
         {/* Achievements */}
         {analytics.achievements.length > 0 && (
-          <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 p-6">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 p-6">
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-6">
               Achievements
             </h3>
@@ -345,7 +345,7 @@ const SummaryCard = ({ title, value, icon, color }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 hover:border-gray-300 dark:hover:border-gray-700 transition-all">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-stone-200 dark:border-slate-800 p-5 hover:border-stone-300 dark:hover:border-slate-700 transition-all">
       <div className={`w-10 h-10 rounded-full bg-gradient-to-br ${colors[color]} flex items-center justify-center text-xl mb-3`}>
         {icon}
       </div>

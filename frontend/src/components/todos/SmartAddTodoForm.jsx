@@ -101,7 +101,7 @@ const SmartAddTodoForm = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-2xl w-full p-6 shadow-2xl border border-stone-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -121,13 +121,13 @@ const SmartAddTodoForm = ({ onClose }) => {
         </div>
 
         {/* Mode Toggle */}
-        <div className="flex gap-2 mb-6 p-1 bg-gray-100 dark:bg-gray-800 rounded-lg">
+        <div className="flex gap-2 mb-6 p-1 bg-stone-100 dark:bg-slate-800 rounded-lg">
           <button
             type="button"
             onClick={() => setIsSmartMode(true)}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
               isSmartMode
-                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
@@ -143,7 +143,7 @@ const SmartAddTodoForm = ({ onClose }) => {
             onClick={() => setIsSmartMode(false)}
             className={`flex-1 px-4 py-2 rounded-md text-sm font-medium transition-all ${
               !isSmartMode
-                ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm'
                 : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
@@ -171,7 +171,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                 onChange={(e) => setNaturalInput(e.target.value)}
                 placeholder='Try: "Finish the marketing report by Friday" or "Buy groceries - milk, eggs, bread"'
                 rows="3"
-                className="w-full px-3 py-2 border border-blue-300 dark:border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                className="w-full px-3 py-2 border border-blue-300 dark:border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
               />
               <button
                 type="button"
@@ -213,7 +213,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                   value={formData.title}
                   onChange={handleChange}
                   placeholder="What needs to be done?"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                   required
                   autoFocus
                 />
@@ -230,7 +230,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                   onChange={handleChange}
                   placeholder="Additional details..."
                   rows="3"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
 
@@ -244,7 +244,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value="general">General</option>
                     <option value="work">Work</option>
@@ -264,7 +264,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                     name="priority"
                     value={formData.priority}
                     onChange={handleChange}
-                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                    className="w-full px-3 py-2 border border-stone-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                   >
                     <option value="low">Low</option>
                     <option value="medium">Medium</option>
@@ -284,7 +284,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                   name="dueDate"
                   value={formData.dueDate}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-transparent bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                 />
               </div>
 
@@ -305,7 +305,7 @@ const SmartAddTodoForm = ({ onClose }) => {
                 </div>
 
                 {suggestedSubtasks.length > 0 && (
-                  <div className="space-y-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+                  <div className="space-y-2 p-3 bg-stone-50 dark:bg-slate-800 rounded-lg border border-stone-200 dark:border-slate-700">
                     {suggestedSubtasks.map((subtask, index) => (
                       <div key={index} className="flex items-center gap-2 text-sm">
                         <svg className="w-4 h-4 text-indigo-500 dark:text-indigo-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -330,11 +330,11 @@ const SmartAddTodoForm = ({ onClose }) => {
           )}
 
           {/* Action Buttons */}
-          <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <div className="flex justify-end gap-3 pt-4 border-t border-stone-200 dark:border-slate-700">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors font-medium"
+              className="px-5 py-2 text-gray-700 dark:text-gray-300 bg-stone-100 dark:bg-slate-800 rounded-lg hover:bg-stone-200 dark:hover:bg-slate-700 transition-colors font-medium"
             >
               Cancel
             </button>

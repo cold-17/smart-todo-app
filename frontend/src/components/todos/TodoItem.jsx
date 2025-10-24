@@ -80,7 +80,7 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
       case 'high': return 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-orange-300 dark:border-orange-800';
       case 'medium': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400 border-yellow-300 dark:border-yellow-800';
       case 'low': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-300 dark:border-green-800';
-      default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border-gray-300 dark:border-gray-700';
+      default: return 'bg-stone-100 text-gray-700 dark:bg-slate-800 dark:text-gray-400 border-stone-300 dark:border-slate-700';
     }
   };
 
@@ -91,7 +91,7 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
       case 'health': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
       case 'learning': return 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400';
       case 'urgent': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-      default: return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400';
+      default: return 'bg-stone-100 text-gray-700 dark:bg-slate-800 dark:text-gray-400';
     }
   };
 
@@ -108,16 +108,16 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
   const progressPercentage = progress ? (progress.completed / progress.total) * 100 : 0;
 
   return (
-    <div className={`group relative bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden ${
+    <div className={`group relative bg-white dark:bg-slate-900 rounded-xl shadow-sm hover:shadow-lg transition-all duration-200 overflow-hidden ${
       todo.completed ? 'opacity-70' : ''
     } ${
-      isOverdue() ? 'ring-2 ring-red-400 dark:ring-red-600' : 'border border-gray-200 dark:border-gray-700'
+      isOverdue() ? 'ring-2 ring-red-400 dark:ring-red-600' : 'border border-stone-200 dark:border-slate-800'
     } ${
       isSelected ? 'ring-2 ring-blue-500 dark:ring-blue-400' : ''
     }`}>
       {/* Progress bar for subtasks */}
       {progress && progress.total > 0 && (
-        <div className="absolute top-0 left-0 right-0 h-1 bg-gray-200 dark:bg-gray-700">
+        <div className="absolute top-0 left-0 right-0 h-1 bg-stone-200 dark:bg-slate-700">
           <div
             className="h-full bg-gradient-to-r from-indigo-500 to-purple-600 transition-all duration-300"
             style={{ width: `${progressPercentage}%` }}
@@ -212,7 +212,7 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
                     <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium ${
                       isOverdue()
                         ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                        : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400'
+                        : 'bg-stone-100 text-gray-600 dark:bg-slate-700 dark:text-gray-400'
                     }`}>
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -285,7 +285,7 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
                     onChange={(e) => setNewSubtask(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleAddSubtask()}
                     placeholder="Add a subtask..."
-                    className="flex-1 text-sm px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all"
+                    className="flex-1 text-sm px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:focus:ring-indigo-400 transition-all"
                   />
                   <button
                     onClick={handleAddSubtask}
@@ -350,7 +350,7 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
             <div className="md:hidden relative">
               <button
                 onClick={() => setShowMobileMenu(!showMobileMenu)}
-                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all"
+                className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-stone-100 dark:hover:bg-slate-800 rounded-lg transition-all"
                 title="More actions"
               >
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
@@ -368,7 +368,7 @@ const TodoItem = ({ todo, bulkMode = false, isSelected = false, onToggleSelect }
                   />
 
                   {/* Menu */}
-                  <div className="absolute right-0 top-10 z-20 w-48 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 py-1">
+                  <div className="absolute right-0 top-10 z-20 w-48 bg-white dark:bg-slate-900 rounded-lg shadow-lg border border-stone-200 dark:border-slate-800 py-1">
                     {!todo.completed && (
                       <button
                         onClick={() => {

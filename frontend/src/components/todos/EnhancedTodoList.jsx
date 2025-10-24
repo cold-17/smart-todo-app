@@ -197,7 +197,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
   return (
     <div className="space-y-0">
       {/* Search and Filters - Simplified UI */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 p-6">
+      <div className="bg-white dark:bg-slate-900 border-b border-stone-200 dark:border-slate-800 p-6">
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -222,7 +222,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={clearAllFilters}
-                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 rounded-full text-xs font-medium transition-colors"
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-stone-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-stone-200 dark:hover:bg-slate-700 rounded-full text-xs font-medium transition-colors"
                   title="Clear all filters"
                 >
                   <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -235,10 +235,10 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
           </div>
 
           {/* View Mode Toggle */}
-          <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+          <div className="flex items-center gap-1 bg-stone-100 dark:bg-slate-800 rounded-lg p-1">
             <button
               onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
+              className={`p-1.5 rounded ${viewMode === 'list' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
               title="List view"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -247,7 +247,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
+              className={`p-1.5 rounded ${viewMode === 'grid' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
               title="Grid view"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -256,7 +256,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             </button>
             <button
               onClick={() => setViewMode('compact')}
-              className={`p-1.5 rounded ${viewMode === 'compact' ? 'bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
+              className={`p-1.5 rounded ${viewMode === 'compact' ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-sm' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'} transition-all`}
               title="Compact view"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +284,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search todos by title or description..."
-              className="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:text-white"
+              className="w-full pl-10 pr-10 py-2.5 text-sm bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all dark:text-white"
             />
             {searchQuery && (
               <motion.button
@@ -310,7 +310,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
                 const value = e.target.value;
                 handleFilterChange('completed', value === 'all' ? undefined : value === 'true');
               }}
-              className="w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
+              className="w-full text-sm bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
             >
               <option value="all">All</option>
               <option value="false">Active</option>
@@ -323,7 +323,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             <select
               value={filters.category}
               onChange={(e) => handleFilterChange('category', e.target.value)}
-              className="w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
+              className="w-full text-sm bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
             >
               <option value="all">All</option>
               <option value="work">Work</option>
@@ -340,7 +340,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             <select
               value={filters.priority}
               onChange={(e) => handleFilterChange('priority', e.target.value)}
-              className="w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
+              className="w-full text-sm bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
             >
               <option value="all">All</option>
               <option value="urgent">Urgent</option>
@@ -355,7 +355,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="w-full text-sm bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
+              className="w-full text-sm bg-white dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:text-white transition-all"
             >
               <option value="createdAt">Newest First</option>
               <option value="dueDate">Due Date</option>
@@ -382,7 +382,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
       </AnimatePresence>
 
       {/* Bulk Actions Bar - Enhanced */}
-      <div className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-6 py-3 flex items-center justify-between flex-wrap gap-3">
+      <div className="bg-white dark:bg-slate-900 border-b border-stone-200 dark:border-slate-800 px-6 py-3 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2">
           <motion.button
             whileHover={{ scale: 1.05 }}
@@ -394,7 +394,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             className={`h-9 px-4 rounded-full text-xs font-semibold transition-all shadow-sm ${
               bulkMode
                 ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-blue-500/30'
-                : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                : 'bg-stone-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 hover:bg-stone-200 dark:hover:bg-slate-700'
             }`}
           >
             {bulkMode ? '✓ Done' : 'Select Multiple'}
@@ -410,13 +410,13 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
               >
                 <button
                   onClick={selectAll}
-                  className="h-9 px-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  className="h-9 px-3 bg-stone-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-stone-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   All
                 </button>
                 <button
                   onClick={deselectAll}
-                  className="h-9 px-3 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+                  className="h-9 px-3 bg-stone-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-stone-200 dark:hover:bg-slate-700 transition-colors"
                 >
                   None
                 </button>
@@ -460,7 +460,7 @@ const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} })
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleDeleteCompleted}
-            className="h-9 px-4 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+            className="h-9 px-4 bg-stone-100 dark:bg-slate-800 text-gray-700 dark:text-gray-300 rounded-full text-xs font-medium hover:bg-stone-200 dark:hover:bg-slate-700 transition-colors"
           >
             Clear Completed
           </motion.button>

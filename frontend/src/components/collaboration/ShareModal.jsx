@@ -111,7 +111,7 @@ const ShareModal = ({ onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-      <div className="bg-white dark:bg-gray-900 rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-gray-200 dark:border-gray-800 max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-4xl w-full p-6 shadow-2xl border border-stone-200 dark:border-slate-800 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
@@ -147,7 +147,7 @@ const ShareModal = ({ onClose }) => {
           {/* Left Column: Create & List */}
           <div className="space-y-6">
             {/* Create New List */}
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+            <div className="bg-stone-50 dark:bg-slate-800 rounded-xl p-4 border border-stone-200 dark:border-slate-700">
               <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Create New List</h3>
               <form onSubmit={handleCreateList} className="space-y-3">
                 <input
@@ -155,7 +155,7 @@ const ShareModal = ({ onClose }) => {
                   value={newListName}
                   onChange={(e) => setNewListName(e.target.value)}
                   placeholder="List name (e.g., Team Project)"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                  className="w-full px-3 py-2 border border-stone-300 dark:border-slate-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-700 text-gray-900 dark:text-gray-100"
                   required
                 />
                 <button
@@ -187,7 +187,7 @@ const ShareModal = ({ onClose }) => {
                       className={`p-4 rounded-lg border cursor-pointer transition-all ${
                         selectedList?._id === list._id
                           ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700'
-                          : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700'
+                          : 'bg-white dark:bg-slate-800 border-stone-200 dark:border-slate-700 hover:border-blue-300 dark:hover:border-blue-700'
                       }`}
                     >
                       <div className="flex items-start justify-between">
@@ -221,7 +221,7 @@ const ShareModal = ({ onClose }) => {
             {selectedList ? (
               <>
                 {/* List Details */}
-                <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
+                <div className="bg-stone-50 dark:bg-slate-800 rounded-xl p-4 border border-stone-200 dark:border-slate-700">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 dark:text-white">{selectedList.name}</h3>
@@ -259,13 +259,13 @@ const ShareModal = ({ onClose }) => {
                     <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Members</h4>
                     <div className="space-y-2">
                       {selectedList.members.map(member => (
-                        <div key={member.user._id} className="flex items-center justify-between p-2 bg-white dark:bg-gray-700 rounded-lg">
+                        <div key={member.user._id} className="flex items-center justify-between p-2 bg-white dark:bg-slate-700 rounded-lg">
                           <div>
                             <p className="text-sm font-medium text-gray-900 dark:text-white">{member.user.username}</p>
                             <p className="text-xs text-gray-500 dark:text-gray-400">{member.user.email}</p>
                           </div>
                           <div className="flex items-center gap-2">
-                            <span className="text-xs px-2 py-1 bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-gray-300 rounded-full">
+                            <span className="text-xs px-2 py-1 bg-stone-100 dark:bg-slate-600 text-gray-700 dark:text-gray-300 rounded-full">
                               {member.role}
                             </span>
                             {member.role !== 'owner' && selectedList.owner._id === selectedList.members.find(m => m.role === 'owner')?.user._id && (
@@ -308,7 +308,7 @@ const ShareModal = ({ onClose }) => {
                         value={inviteEmail}
                         onChange={(e) => setInviteEmail(e.target.value)}
                         placeholder="Enter email address"
-                        className="w-full px-3 py-2 border border-blue-300 dark:border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                        className="w-full px-3 py-2 border border-blue-300 dark:border-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-slate-800 text-gray-900 dark:text-gray-100"
                         required
                       />
                       <button

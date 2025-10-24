@@ -309,7 +309,7 @@ const FocusMode = ({ onClose }) => {
               animate={{ scale: 1 }}
               exit={{ scale: 0.9 }}
               onClick={(e) => e.stopPropagation()}
-              className="bg-white dark:bg-gray-900 rounded-3xl p-8 max-w-md mx-4"
+              className="bg-white dark:bg-slate-900 rounded-3xl p-8 max-w-md mx-4"
             >
               <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Keyboard Shortcuts</h3>
               <div className="space-y-3">
@@ -323,7 +323,7 @@ const FocusMode = ({ onClose }) => {
                 ].map(({ key, action }) => (
                   <div key={key} className="flex items-center justify-between">
                     <span className="text-gray-600 dark:text-gray-400">{action}</span>
-                    <kbd className="px-3 py-1 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-sm font-mono">
+                    <kbd className="px-3 py-1 bg-stone-100 dark:bg-slate-800 border border-stone-300 dark:border-slate-700 rounded-lg text-sm font-mono">
                       {key}
                     </kbd>
                   </div>

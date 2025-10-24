@@ -109,7 +109,7 @@ const PomodoroTimer = ({ task, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl max-w-md w-full p-8">
+      <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 shadow-2xl max-w-md w-full p-8">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
@@ -117,7 +117,7 @@ const PomodoroTimer = ({ task, onClose }) => {
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-stone-100 dark:hover:bg-slate-800 transition-all"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -134,12 +134,12 @@ const PomodoroTimer = ({ task, onClose }) => {
         )}
 
         {/* Mode Selector */}
-        <div className="flex gap-2 mb-8 bg-gray-100 dark:bg-gray-800 rounded-2xl p-1">
+        <div className="flex gap-2 mb-8 bg-stone-100 dark:bg-slate-800 rounded-2xl p-1">
           <button
             onClick={() => switchMode('work')}
             className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
               mode === 'work'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-600 dark:text-gray-400'
             }`}
           >
@@ -149,7 +149,7 @@ const PomodoroTimer = ({ task, onClose }) => {
             onClick={() => switchMode('shortBreak')}
             className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
               mode === 'shortBreak'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-600 dark:text-gray-400'
             }`}
           >
@@ -159,7 +159,7 @@ const PomodoroTimer = ({ task, onClose }) => {
             onClick={() => switchMode('longBreak')}
             className={`flex-1 py-2 px-4 rounded-xl text-sm font-medium transition-all ${
               mode === 'longBreak'
-                ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+                ? 'bg-white dark:bg-slate-700 text-gray-900 dark:text-white shadow-sm'
                 : 'text-gray-600 dark:text-gray-400'
             }`}
           >
@@ -219,14 +219,14 @@ const PomodoroTimer = ({ task, onClose }) => {
           </button>
           <button
             onClick={resetTimer}
-            className="h-14 px-6 rounded-2xl font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all"
+            className="h-14 px-6 rounded-2xl font-semibold text-gray-700 dark:text-gray-300 bg-stone-100 dark:bg-slate-800 hover:bg-stone-200 dark:hover:bg-slate-700 transition-all"
           >
             Reset
           </button>
         </div>
 
         {/* Stats */}
-        <div className="flex items-center justify-center gap-6 pt-6 border-t border-gray-200 dark:border-gray-800">
+        <div className="flex items-center justify-center gap-6 pt-6 border-t border-stone-200 dark:border-slate-800">
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {completedPomodoros}
@@ -235,7 +235,7 @@ const PomodoroTimer = ({ task, onClose }) => {
               Completed
             </div>
           </div>
-          <div className="w-px h-8 bg-gray-200 dark:bg-gray-800"></div>
+          <div className="w-px h-8 bg-stone-200 dark:bg-slate-800"></div>
           <div className="text-center">
             <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {Math.floor((completedPomodoros * 25) / 60)}h {(completedPomodoros * 25) % 60}m

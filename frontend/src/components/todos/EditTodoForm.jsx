@@ -37,12 +37,12 @@ const EditTodoForm = ({ todo, onClose }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg max-w-md w-full p-6">
+      <div className="bg-white dark:bg-slate-900 rounded-lg max-w-md w-full p-6 border border-stone-200 dark:border-slate-800">
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Edit Todo</h2>
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-white">Edit Todo</h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -141,7 +141,7 @@ const EditTodoForm = ({ todo, onClose }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 transition-colors"
+              className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-stone-100 dark:bg-slate-800 rounded-md hover:bg-stone-200 dark:hover:bg-slate-700 transition-colors"
             >
               Cancel
             </button>

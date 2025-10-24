@@ -114,7 +114,8 @@ export const AuthProvider = ({ children }) => {
       login,
       register,
       logout,
-      clearError
+      clearError,
+      axios
     }}>
       {children}
     </AuthContext.Provider>

@@ -29,7 +29,7 @@ const ExportModal = ({ onClose }) => {
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         onClick={(e) => e.stopPropagation()}
-        className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-2xl max-w-lg w-full p-8"
+        className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 shadow-2xl max-w-lg w-full p-8"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -38,7 +38,7 @@ const ExportModal = ({ onClose }) => {
           </h2>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-gray-500 hover:bg-stone-100 dark:hover:bg-slate-800 transition-all"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -135,7 +135,7 @@ const ExportModal = ({ onClose }) => {
         </div>
 
         {/* Info Note */}
-        <div className="mt-6 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl">
+        <div className="mt-6 p-4 bg-stone-50 dark:bg-slate-800 rounded-xl">
           <div className="flex items-start gap-3">
             <svg className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useTodos } from '../context/TodoContext';
 import { useTheme } from '../context/ThemeContext';
@@ -11,6 +12,7 @@ import ExportModal from '../components/common/ExportModal';
 import KeyboardShortcutsPanel from '../components/common/KeyboardShortcutsPanel';
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth();
   const { stats, fetchStats } = useTodos();
   const { darkMode, toggleDarkMode } = useTheme();
@@ -77,9 +79,9 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
+    <div className="min-h-screen bg-stone-50 dark:bg-slate-950 transition-colors duration-300">
       {/* Navigation - Apple Style */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/70 dark:bg-gray-900/70 backdrop-blur-2xl border-b border-gray-200/20 dark:border-gray-800/20">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-2xl border-b border-stone-200/30 dark:border-slate-800/30">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center h-14">
             {/* Logo */}
@@ -114,7 +116,7 @@ const Dashboard = () => {
               </div>
 
               <button
-                onClick={() => window.location.href = '/analytics'}
+                onClick={() => navigate('/analytics')}
                 className="px-3 h-8 rounded-full text-xs font-medium text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-all duration-200 flex items-center gap-1.5"
                 title="View Analytics"
               >
@@ -172,10 +174,10 @@ const Dashboard = () => {
             {/* Total Tasks Card */}
             <button
               onClick={() => handleStatCardClick('all')}
-              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+              className={`bg-white dark:bg-slate-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
                 activeFilter === 'all'
                   ? 'border-blue-500 dark:border-blue-500 ring-2 ring-blue-500/30'
-                  : 'border-gray-200 dark:border-gray-800 hover:border-blue-300 dark:hover:border-blue-700'
+                  : 'border-stone-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-blue-700'
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -193,10 +195,10 @@ const Dashboard = () => {
             {/* Completed Card */}
             <button
               onClick={() => handleStatCardClick('completed')}
-              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+              className={`bg-white dark:bg-slate-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
                 activeFilter === 'completed'
                   ? 'border-green-500 dark:border-green-500 ring-2 ring-green-500/30'
-                  : 'border-gray-200 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-700'
+                  : 'border-stone-200 dark:border-slate-800 hover:border-green-300 dark:hover:border-green-700'
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -214,10 +216,10 @@ const Dashboard = () => {
             {/* Pending Card */}
             <button
               onClick={() => handleStatCardClick('active')}
-              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+              className={`bg-white dark:bg-slate-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
                 activeFilter === 'active'
                   ? 'border-orange-500 dark:border-orange-500 ring-2 ring-orange-500/30'
-                  : 'border-gray-200 dark:border-gray-800 hover:border-orange-300 dark:hover:border-orange-700'
+                  : 'border-stone-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-orange-700'
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -235,10 +237,10 @@ const Dashboard = () => {
             {/* Due Today Card */}
             <button
               onClick={() => handleStatCardClick('dueToday')}
-              className={`bg-white dark:bg-gray-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
+              className={`bg-white dark:bg-slate-900 rounded-2xl p-5 border transition-all duration-200 cursor-pointer group text-left ${
                 activeFilter === 'dueToday'
                   ? 'border-yellow-500 dark:border-yellow-500 ring-2 ring-yellow-500/30'
-                  : 'border-gray-200 dark:border-gray-800 hover:border-yellow-300 dark:hover:border-yellow-700'
+                  : 'border-stone-200 dark:border-slate-800 hover:border-yellow-300 dark:hover:border-yellow-700'
               }`}
             >
               <div className="flex items-center gap-3 mb-3">
@@ -254,7 +256,7 @@ const Dashboard = () => {
             </button>
 
             {/* Success Rate Card */}
-            <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-200 dark:border-gray-800 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 group">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-stone-200 dark:border-slate-800 hover:border-purple-300 dark:hover:border-purple-700 transition-all duration-200 group">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center group-hover:scale-110 transition-transform">
                   <svg className="w-5 h-5 text-purple-600 dark:text-purple-400" fill="currentColor" viewBox="0 0 20 20">
@@ -317,7 +319,7 @@ const Dashboard = () => {
         </div>
 
         {/* Todo List */}
-        <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-200 dark:border-gray-800 shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-stone-200 dark:border-slate-800 shadow-sm overflow-hidden">
           <EnhancedTodoList quickFilter={activeFilter} onClearQuickFilter={clearQuickFilter} />
         </div>
 

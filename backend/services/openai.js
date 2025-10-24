@@ -1,8 +1,12 @@
 const OpenAI = require('openai');
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY
-});
+// Only initialize OpenAI if API key is provided
+let openai = null;
+if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'your-openai-api-key-here') {
+  openai = new OpenAI({
+    apiKey: process.env.OPENAI_API_KEY
+  });
+}
 
 /**
  * Parse natural language input into structured todo data
@@ -11,6 +15,9 @@ const openai = new OpenAI({
  */
 async function parseTask(input) {
   try {
+    if (!openai) {
+      throw new Error('OpenAI service not configured');
+    }
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -69,6 +76,9 @@ Examples:
  */
 async function suggestPriority(title, description = '', dueDate = null) {
   try {
+    if (!openai) {
+      return 'medium';
+    }
     const dueDateInfo = dueDate ? `Due date: ${new Date(dueDate).toLocaleDateString()}` : 'No due date';
 
     const completion = await openai.chat.completions.create({
@@ -112,6 +122,9 @@ Consider:
  */
 async function decomposeTask(title, description = '') {
   try {
+    if (!openai) {
+      return [];
+    }
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
@@ -155,6 +168,9 @@ If the task is already simple, return an empty array.`
  */
 async function categorizeTask(title, description = '') {
   try {
+    if (!openai) {
+      return 'general';
+    }
     const completion = await openai.chat.completions.create({
       model: "gpt-4",
       messages: [
