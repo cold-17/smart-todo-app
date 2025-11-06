@@ -39,3 +39,6 @@ ehthumbs.db
 Thumbs.db
 
 *.md
+!SECURITY_IMPLEMENTATION.md
+!README.md
+!CLAUDE.md

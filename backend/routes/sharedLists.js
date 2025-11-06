@@ -3,6 +3,9 @@ const SharedList = require('../models/SharedList');
 const User = require('../models/User');
 const Todo = require('../models/Todo');
 const authMiddleware = require('../middleware/authMiddleware');
+const { validate, sharedListSchemas } = require('../middleware/validation');
+const { asyncHandler } = require('../middleware/errorHandler');
+const logger = require('../config/logger');
 
 const router = express.Router();
 
@@ -21,7 +24,7 @@ router.get('/', async (req, res) => {
 
     res.json(lists);
   } catch (error) {
-    console.error('Get shared lists error:', error);
+    logger.error('Get shared lists error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -44,7 +47,7 @@ router.get('/:id', async (req, res) => {
 
     res.json(list);
   } catch (error) {
-    console.error('Get shared list error:', error);
+    logger.error('Get shared list error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -71,7 +74,7 @@ router.post('/', async (req, res) => {
 
     res.status(201).json(populatedList);
   } catch (error) {
-    console.error('Create shared list error:', error);
+    logger.error('Create shared list error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -135,7 +138,7 @@ router.post('/:id/invite', async (req, res) => {
 
     res.json(populatedList);
   } catch (error) {
-    console.error('Invite user error:', error);
+    logger.error('Invite user error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -174,7 +177,7 @@ router.delete('/:id/members/:userId', async (req, res) => {
 
     res.json(populatedList);
   } catch (error) {
-    console.error('Remove member error:', error);
+    logger.error('Remove member error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -200,7 +203,7 @@ router.delete('/:id', async (req, res) => {
 
     res.json({ message: 'Shared list and associated todos deleted successfully' });
   } catch (error) {
-    console.error('Delete shared list error:', error);
+    logger.error('Delete shared list error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
@@ -240,7 +243,7 @@ router.get('/:id/todos', async (req, res) => {
 
     res.json(todos);
   } catch (error) {
-    console.error('Get shared list todos error:', error);
+    logger.error('Get shared list todos error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });

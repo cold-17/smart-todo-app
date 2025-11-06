@@ -56,6 +56,11 @@ const sharedListSchema = new mongoose.Schema({
   }
 });
 
+// Indexes for performance
+sharedListSchema.index({ owner: 1 }); // Find lists owned by user
+sharedListSchema.index({ 'members.user': 1 }); // Find lists where user is a member
+sharedListSchema.index({ 'pendingInvites.email': 1 }); // Look up pending invites by email
+
 // Update the updatedAt timestamp before saving
 sharedListSchema.pre('save', function(next) {
   this.updatedAt = Date.now();

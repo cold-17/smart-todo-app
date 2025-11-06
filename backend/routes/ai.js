@@ -1,6 +1,9 @@
 const express = require('express');
 const authMiddleware = require('../middleware/authMiddleware');
 const { parseTask, suggestPriority, decomposeTask, categorizeTask } = require('../services/openai');
+const { validate, aiSchemas } = require('../middleware/validation');
+const { asyncHandler } = require('../middleware/errorHandler');
+const logger = require('../config/logger');
 
 const router = express.Router();
 
@@ -13,27 +16,21 @@ router.use(authMiddleware);
  * Body: { input: string }
  * Returns: { title, description, category, priority, dueDate, subtasks }
  */
-router.post('/parse-task', async (req, res) => {
-  try {
-    const { input } = req.body;
+router.post('/parse-task', validate(aiSchemas.parseTask), asyncHandler(async (req, res) => {
+  const { input } = req.body;
 
-    if (!input || typeof input !== 'string' || input.trim() === '') {
-      return res.status(400).json({ message: 'Input text is required' });
-    }
-
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
-      return res.status(503).json({
-        message: 'AI service not configured. Please add your OpenAI API key to the .env file.'
-      });
-    }
-
-    const parsed = await parseTask(input.trim());
-    res.json(parsed);
-  } catch (error) {
-    console.error('Parse task error:', error);
-    res.status(500).json({ message: 'Failed to parse task', error: error.message });
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+    logger.warn('AI service called but not configured', { userId: req.user._id });
+    return res.status(503).json({
+      message: 'AI service not configured. Please add your OpenAI API key to the .env file.'
+    });
   }
-});
+
+  logger.info('Parsing task with AI', { userId: req.user._id });
+
+  const parsed = await parseTask(input);
+  res.json(parsed);
+}));
 
 /**
  * POST /api/ai/suggest-priority
@@ -41,27 +38,20 @@ router.post('/parse-task', async (req, res) => {
  * Body: { title: string, description?: string, dueDate?: string }
  * Returns: { priority: string }
  */
-router.post('/suggest-priority', async (req, res) => {
-  try {
-    const { title, description, dueDate } = req.body;
+router.post('/suggest-priority', validate(aiSchemas.suggestPriority), asyncHandler(async (req, res) => {
+  const { title, description, dueDate } = req.body;
 
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-      return res.status(400).json({ message: 'Title is required' });
-    }
-
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
-      return res.status(503).json({
-        message: 'AI service not configured'
-      });
-    }
-
-    const priority = await suggestPriority(title.trim(), description?.trim(), dueDate);
-    res.json({ priority });
-  } catch (error) {
-    console.error('Suggest priority error:', error);
-    res.status(500).json({ message: 'Failed to suggest priority', error: error.message });
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+    return res.status(503).json({
+      message: 'AI service not configured'
+    });
   }
-});
+
+  logger.info('Suggesting priority with AI', { userId: req.user._id });
+
+  const priority = await suggestPriority(title, description, dueDate);
+  res.json({ priority });
+}));
 
 /**
  * POST /api/ai/decompose-task
@@ -69,27 +59,20 @@ router.post('/suggest-priority', async (req, res) => {
  * Body: { title: string, description?: string }
  * Returns: { subtasks: string[] }
  */
-router.post('/decompose-task', async (req, res) => {
-  try {
-    const { title, description } = req.body;
+router.post('/decompose-task', validate(aiSchemas.decomposeTask), asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
 
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-      return res.status(400).json({ message: 'Title is required' });
-    }
-
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
-      return res.status(503).json({
-        message: 'AI service not configured'
-      });
-    }
-
-    const subtasks = await decomposeTask(title.trim(), description?.trim());
-    res.json({ subtasks });
-  } catch (error) {
-    console.error('Decompose task error:', error);
-    res.status(500).json({ message: 'Failed to decompose task', error: error.message });
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+    return res.status(503).json({
+      message: 'AI service not configured'
+    });
   }
-});
+
+  logger.info('Decomposing task with AI', { userId: req.user._id });
+
+  const subtasks = await decomposeTask(title, description);
+  res.json({ subtasks });
+}));
 
 /**
  * POST /api/ai/categorize-task
@@ -97,26 +80,19 @@ router.post('/decompose-task', async (req, res) => {
  * Body: { title: string, description?: string }
  * Returns: { category: string }
  */
-router.post('/categorize-task', async (req, res) => {
-  try {
-    const { title, description } = req.body;
+router.post('/categorize-task', validate(aiSchemas.categorizeTask), asyncHandler(async (req, res) => {
+  const { title, description } = req.body;
 
-    if (!title || typeof title !== 'string' || title.trim() === '') {
-      return res.status(400).json({ message: 'Title is required' });
-    }
-
-    if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
-      return res.status(503).json({
-        message: 'AI service not configured'
-      });
-    }
-
-    const category = await categorizeTask(title.trim(), description?.trim());
-    res.json({ category });
-  } catch (error) {
-    console.error('Categorize task error:', error);
-    res.status(500).json({ message: 'Failed to categorize task', error: error.message });
+  if (!process.env.OPENAI_API_KEY || process.env.OPENAI_API_KEY === 'your-openai-api-key-here') {
+    return res.status(503).json({
+      message: 'AI service not configured'
+    });
   }
-});
+
+  logger.info('Categorizing task with AI', { userId: req.user._id });
+
+  const category = await categorizeTask(title, description);
+  res.json({ category });
+}));
 
 module.exports = router;

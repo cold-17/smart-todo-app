@@ -2,6 +2,9 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const authMiddleware = require('../middleware/authMiddleware');
+const { validate, authSchemas } = require('../middleware/validation');
+const { asyncHandler } = require('../middleware/errorHandler');
+const logger = require('../config/logger');
 
 const router = express.Router();
 
@@ -11,98 +14,78 @@ const generateToken = (userId) => {
 };
 
 // Register User
-router.post('/register', async (req, res) => {
-  try {
-    const { username, email, password } = req.body;
+router.post('/register', validate(authSchemas.register), asyncHandler(async (req, res) => {
+  const { username, email, password } = req.body;
 
-    console.log('Registration attempt for:', { username, email });
+  logger.info('Registration attempt', { username, email });
 
-    // Check if user already exists
-    const existingUser = await User.findOne({
-      $or: [{ email }, { username }]
+  // Check if user already exists
+  const existingUser = await User.findOne({
+    $or: [{ email }, { username }]
+  });
+
+  if (existingUser) {
+    logger.warn('Registration failed - user already exists', { email });
+    return res.status(400).json({
+      message: existingUser.email === email ? 'Email already registered' : 'Username already taken'
     });
-
-    if (existingUser) {
-      console.log('User already exists:', existingUser.email);
-      return res.status(400).json({
-        message: existingUser.email === email ? 'Email already registered' : 'Username already taken'
-      });
-    }
-
-    console.log('Creating new user...');
-
-    // Create new user
-    const user = new User({ username, email, password });
-    await user.save();
-
-    console.log('User created successfully:', user.username);
-
-    // Generate token
-    const token = generateToken(user._id);
-
-    console.log('Token generated for user:', user.username);
-
-    res.status(201).json({
-      message: 'User registered successfully',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error('Registration error (detailed):', error.message);
-    console.error('Full error stack:', error.stack);
-    res.status(500).json({ message: 'Server error during registration', error: error.message });
   }
-});
+
+  // Create new user
+  const user = new User({ username, email, password });
+  await user.save();
+
+  logger.info('User registered successfully', { userId: user._id, username: user.username });
+
+  // Generate token
+  const token = generateToken(user._id);
+
+  res.status(201).json({
+    message: 'User registered successfully',
+    token,
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email
+    }
+  });
+}));
 
 // Login User
-router.post('/login', async (req, res) => {
-  try {
-    const { email, password } = req.body;
+router.post('/login', validate(authSchemas.login), asyncHandler(async (req, res) => {
+  const { email, password } = req.body;
 
-    console.log('Login attempt for email:', email);
+  logger.info('Login attempt', { email });
 
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      console.log('User not found for email:', email);
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    console.log('User found:', user.username);
-
-    // Check password
-    const isMatch = await user.comparePassword(password);
-    if (!isMatch) {
-      console.log('Password mismatch for user:', user.username);
-      return res.status(400).json({ message: 'Invalid credentials' });
-    }
-
-    console.log('Password matched, generating token');
-
-    // Generate token
-    const token = generateToken(user._id);
-
-    console.log('Login successful for user:', user.username);
-
-    res.json({
-      message: 'Login successful',
-      token,
-      user: {
-        id: user._id,
-        username: user.username,
-        email: user.email
-      }
-    });
-  } catch (error) {
-    console.error('Login error (detailed):', error.message);
-    console.error('Full error stack:', error.stack);
-    res.status(500).json({ message: 'Server error during login', error: error.message });
+  // Find user by email
+  const user = await User.findOne({ email });
+  if (!user) {
+    logger.warn('Login failed - user not found', { email });
+    return res.status(400).json({ message: 'Invalid credentials' });
   }
-});
+
+  // Check password
+  const isMatch = await user.comparePassword(password);
+  if (!isMatch) {
+    logger.warn('Login failed - invalid password', { email, userId: user._id });
+    return res.status(400).json({ message: 'Invalid credentials' });
+  }
+
+  // Generate token
+  const token = generateToken(user._id);
+
+  logger.info('Login successful', { userId: user._id, username: user.username });
+
+  res.json({
+    message: 'Login successful',
+    token,
+    user: {
+      id: user._id,
+      username: user.username,
+      email: user.email
+    }
+  });
+}));
 
 // Get Current User
 router.get('/me', authMiddleware, async (req, res) => {

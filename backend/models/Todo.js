@@ -106,6 +106,15 @@ const TodoSchema = new mongoose.Schema({
   timestamps: true
 });
 
+// Indexes for performance
+TodoSchema.index({ user: 1, completed: 1 }); // Compound index for filtering user's todos by completion
+TodoSchema.index({ user: 1, dueDate: 1 }); // Compound index for finding todos by user and due date
+TodoSchema.index({ user: 1, category: 1 }); // Compound index for filtering by category
+TodoSchema.index({ user: 1, priority: 1 }); // Compound index for filtering by priority
+TodoSchema.index({ sharedList: 1 }); // Index for shared list queries
+TodoSchema.index({ completedAt: 1 }); // Index for analytics queries
+TodoSchema.index({ createdAt: -1 }); // Index for sorting by creation date
+
 // Update completedAt when todo is marked complete
 TodoSchema.pre('save', function(next) {
   if (this.isModified('completed')) {

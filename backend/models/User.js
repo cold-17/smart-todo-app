@@ -5,7 +5,6 @@ const UserSchema = new mongoose.Schema({
   username: {
     type: String,
     required: true,
-    unique: true,
     trim: true,
     minlength: 3,
     maxlength: 20
@@ -13,7 +12,6 @@ const UserSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -25,6 +23,10 @@ const UserSchema = new mongoose.Schema({
 }, {
   timestamps: true
 });
+
+// Indexes for performance and uniqueness
+UserSchema.index({ email: 1 }, { unique: true });
+UserSchema.index({ username: 1 }, { unique: true });
 
 // Hash password before saving
 UserSchema.pre('save', async function(next) {

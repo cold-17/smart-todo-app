@@ -5,9 +5,18 @@ const http = require('http');
 const path = require('path');
 const helmet = require('helmet');
 const rateLimit = require('express-rate-limit');
-const mongoSanitize = require('express-mongo-sanitize');
 const { Server } = require('socket.io');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
+
+// Load and validate environment variables
+const validateEnv = require('./config/env');
+const env = validateEnv();
+
+// Initialize logger
+const logger = require('./config/logger');
+
+// Import error handlers
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const server = http.createServer(app);
@@ -15,7 +24,7 @@ const server = http.createServer(app);
 // Socket.io setup with CORS
 const io = new Server(server, {
   cors: {
-    origin: process.env.CLIENT_URL || 'http://localhost:5173',
+    origin: env.CLIENT_URL,
     methods: ['GET', 'POST'],
     credentials: true
   }
@@ -23,7 +32,7 @@ const io = new Server(server, {
 
 // Security Middleware
 app.use(helmet());
-app.use(mongoSanitize()); // Prevent NoSQL injection
+// NoSQL injection prevention is handled by Joi validation (stripUnknown: true)
 
 // Rate limiting
 const limiter = rateLimit({
@@ -45,7 +54,7 @@ app.use('/api/auth/register', authLimiter);
 
 // CORS
 app.use(cors({
-  origin: process.env.CLIENT_URL || 'http://localhost:5173',
+  origin: env.CLIENT_URL,
   credentials: true
 }));
 
@@ -65,13 +74,41 @@ app.get('/', (req, res) => {
   res.json({ message: 'Smart ToDo App Backend Running!' });
 });
 
+// Health check endpoint
+app.get('/health', (req, res) => {
+  res.json({
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    environment: env.NODE_ENV,
+  });
+});
+
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost/smart-todo-app')
-  .then(() => console.log('MongoDB connected'))
-  .catch(err => console.log('MongoDB connection error:', err));
+mongoose.connect(env.MONGODB_URI)
+  .then(() => {
+    logger.info('MongoDB connected successfully', {
+      host: mongoose.connection.host,
+      database: mongoose.connection.name,
+    });
+  })
+  .catch(err => {
+    logger.error('MongoDB connection error', { error: err.message });
+    process.exit(1);
+  });
 
 // Socket.io connection handling
 require('./sockets/todoSocket')(io);
 
-const PORT = process.env.PORT || 5000;
-server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+// Error handling - must be after all routes
+app.use(notFoundHandler);
+app.use(errorHandler);
+
+const PORT = env.PORT;
+server.listen(PORT, () => {
+  logger.info(`Server started successfully`, {
+    port: PORT,
+    environment: env.NODE_ENV,
+    nodeVersion: process.version,
+  });
+});

@@ -1,6 +1,8 @@
 const express = require('express');
 const Todo = require('../models/Todo');
 const authMiddleware = require('../middleware/authMiddleware');
+const { asyncHandler } = require('../middleware/errorHandler');
+const logger = require('../config/logger');
 
 const router = express.Router();
 
@@ -188,7 +190,7 @@ router.get('/', async (req, res) => {
       achievements
     });
   } catch (error) {
-    console.error('Get analytics error:', error);
+    logger.error('Get analytics error:', error);
     res.status(500).json({ message: 'Server error' });
   }
 });
