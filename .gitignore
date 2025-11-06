@@ -40,5 +40,6 @@ Thumbs.db
 
 *.md
 !SECURITY_IMPLEMENTATION.md
+!TESTING.md
 !README.md
 !CLAUDE.md
