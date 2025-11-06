@@ -18,6 +18,12 @@ const envSchema = Joi.object({
   OPENAI_API_KEY: Joi.string().optional().messages({
     'string.base': 'OPENAI_API_KEY must be a valid string if provided.',
   }),
+  SENTRY_DSN: Joi.string().uri().optional().messages({
+    'string.uri': 'SENTRY_DSN must be a valid URI if provided.',
+  }),
+  SENTRY_ENVIRONMENT: Joi.string().optional(),
+  SENTRY_TRACES_SAMPLE_RATE: Joi.number().min(0).max(1).optional().default(0.1),
+  SENTRY_PROFILES_SAMPLE_RATE: Joi.number().min(0).max(1).optional().default(0.1),
 })
   .unknown(true) // Allow other env vars
   .required();

@@ -1,0 +1,104 @@
+# MongoDB Backup Cron Jobs
+#
+# This file contains examples of cron jobs for automated database backups.
+# To install, edit this file with your paths and run:
+#   crontab -e
+# Then paste the desired cron job(s)
+#
+# Cron format: minute hour day month weekday command
+#
+# Examples:
+# *     *    *    *    *  command
+# │     │    │    │    │
+# │     │    │    │    └─── Day of week (0-7, Sun=0 or 7)
+# │     │    │    └──────── Month (1-12)
+# │     │    └───────────── Day of month (1-31)
+# │     └────────────────── Hour (0-23)
+# └──────────────────────── Minute (0-59)
+
+# Change these paths to match your installation
+PROJECT_DIR="/path/to/smart-todo-app"
+BACKUP_SCRIPT="$PROJECT_DIR/scripts/backup-db.sh"
+LOG_DIR="$PROJECT_DIR/logs"
+
+# Ensure log directory exists
+# mkdir -p $LOG_DIR
+
+# ┌─────────────────────────────────────────────────────────────────┐
+# │                         BACKUP SCHEDULES                        │
+# └─────────────────────────────────────────────────────────────────┘
+
+# Daily backup at 2 AM, compress and upload to cloud, keep for 30 days
+0 2 * * * cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --upload --keep 30 >> $LOG_DIR/backup.log 2>&1
+
+# Weekly backup every Sunday at 3 AM, compress and upload, keep for 90 days
+0 3 * * 0 cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --upload --keep 90 >> $LOG_DIR/backup-weekly.log 2>&1
+
+# Hourly backup during business hours (9 AM - 5 PM, Mon-Fri), keep for 2 days
+0 9-17 * * 1-5 cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --keep 2 >> $LOG_DIR/backup-hourly.log 2>&1
+
+# Monthly backup on 1st of month at 4 AM, compress and upload, keep for 365 days
+0 4 1 * * cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --upload --keep 365 >> $LOG_DIR/backup-monthly.log 2>&1
+
+# ┌─────────────────────────────────────────────────────────────────┐
+# │                      RECOMMENDED SCHEDULE                       │
+# └─────────────────────────────────────────────────────────────────┘
+# For production, use this combination:
+#
+# 1. Daily backups at 2 AM (30 day retention)
+#    0 2 * * * cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --upload --keep 30 >> $LOG_DIR/backup.log 2>&1
+#
+# 2. Weekly backups on Sunday (90 day retention)
+#    0 3 * * 0 cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --upload --keep 90 >> $LOG_DIR/backup-weekly.log 2>&1
+#
+# 3. Monthly backups on 1st (365 day retention)
+#    0 4 1 * * cd $PROJECT_DIR && $BACKUP_SCRIPT --compress --upload --keep 365 >> $LOG_DIR/backup-monthly.log 2>&1
+
+# ┌─────────────────────────────────────────────────────────────────┐
+# │                         TROUBLESHOOTING                         │
+# └─────────────────────────────────────────────────────────────────┘
+#
+# If cron jobs aren't running:
+#
+# 1. Check cron is running:
+#    sudo systemctl status cron
+#
+# 2. View cron logs:
+#    grep CRON /var/log/syslog
+#
+# 3. Check user crontab:
+#    crontab -l
+#
+# 4. Test script manually:
+#    cd $PROJECT_DIR && ./scripts/backup-db.sh --compress
+#
+# 5. Check script permissions:
+#    ls -la scripts/backup-db.sh
+#    # Should be: -rwxr-xr-x
+#
+# 6. Verify environment variables:
+#    # Cron doesn't load .env by default
+#    # Make sure MONGODB_URI is accessible or source .env in script
+#
+# 7. Check disk space:
+#    df -h
+#
+# 8. Monitor backup logs:
+#    tail -f logs/backup.log
+
+# ┌─────────────────────────────────────────────────────────────────┐
+# │                         LOG ROTATION                            │
+# └─────────────────────────────────────────────────────────────────┘
+# To prevent log files from growing too large, add logrotate config:
+#
+# Create /etc/logrotate.d/smart-todo-backup:
+#
+# /path/to/smart-todo-app/logs/backup*.log {
+#     daily
+#     rotate 30
+#     compress
+#     delaycompress
+#     missingok
+#     notifempty
+#     create 0640 user user
+# }

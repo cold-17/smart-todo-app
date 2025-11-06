@@ -4,7 +4,6 @@ const cors = require('cors');
 const http = require('http');
 const path = require('path');
 const helmet = require('helmet');
-const rateLimit = require('express-rate-limit');
 const { Server } = require('socket.io');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 
@@ -18,7 +17,21 @@ const logger = require('./config/logger');
 // Import error handlers
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
+// Import rate limiters
+const { apiLimiter, authLimiter, aiLimiter } = require('./middleware/rateLimiter');
+
 const app = express();
+
+// Initialize Sentry (must be before any other middleware)
+const { initSentry } = require('./config/sentry');
+const sentry = initSentry(app);
+
+// Sentry request handler (must be the first middleware)
+if (sentry.isEnabled) {
+  app.use(sentry.requestHandler);
+  app.use(sentry.tracingMiddleware);
+}
+
 const server = http.createServer(app);
 
 // Socket.io setup with CORS
@@ -30,32 +43,47 @@ const io = new Server(server, {
   }
 });
 
-// Security Middleware
-app.use(helmet());
+// Security Middleware - Helmet for security headers
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'"],
+      imgSrc: ["'self'", "data:", "https:"],
+    }
+  },
+  hsts: {
+    maxAge: 31536000,
+    includeSubDomains: true,
+    preload: true
+  }
+}));
 // NoSQL injection prevention is handled by Joi validation (stripUnknown: true)
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
-  message: 'Too many requests from this IP, please try again later.'
-});
-
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 5, // limit each IP to 5 login attempts per windowMs
-  message: 'Too many login attempts, please try again later.',
-  skipSuccessfulRequests: true
-});
-
-app.use('/api/', limiter);
+// Rate limiting - Apply different limits to different route types
+app.use('/api/', apiLimiter);
 app.use('/api/auth/login', authLimiter);
 app.use('/api/auth/register', authLimiter);
+app.use('/api/ai', aiLimiter);
 
-// CORS
+// CORS - Configure allowed origins
+const allowedOrigins = env.CLIENT_URL.split(',').map(url => url.trim());
 app.use(cors({
-  origin: env.CLIENT_URL,
-  credentials: true
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl)
+    if (!origin) return callback(null, true);
+
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      logger.warn('CORS blocked request', { origin });
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 
 // Body parser
@@ -101,6 +129,11 @@ mongoose.connect(env.MONGODB_URI)
 require('./sockets/todoSocket')(io);
 
 // Error handling - must be after all routes
+// Sentry error handler must be before other error handlers
+if (sentry.isEnabled) {
+  app.use(sentry.errorHandler);
+}
+
 app.use(notFoundHandler);
 app.use(errorHandler);
 
