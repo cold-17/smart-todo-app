@@ -8,7 +8,9 @@
     "dev": "nodemon server.js",
     "test": "jest --setupFilesAfterEnv=./__tests__/setup.js",
     "test:watch": "jest --watch --setupFilesAfterEnv=./__tests__/setup.js",
-    "test:coverage": "jest --coverage --setupFilesAfterEnv=./__tests__/setup.js"
+    "test:coverage": "jest --coverage --setupFilesAfterEnv=./__tests__/setup.js",
+    "backup": "node scripts/backup-database.js",
+    "restore": "node scripts/restore-database.js"
   },
   "keywords": [],
   "author": "",

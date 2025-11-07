@@ -1,0 +1,160 @@
+# MongoDB Backup Cron Job Examples
+# Edit crontab: crontab -e
+
+# Daily backup at 2:00 AM
+0 2 * * * cd /path/to/smart-todo-app/backend && /usr/bin/node scripts/backup-database.js >> logs/backup.log 2>&1
+
+# Daily backup at 3:00 AM with explicit environment
+0 3 * * * cd /path/to/smart-todo-app/backend && /usr/bin/env NODE_ENV=production /usr/bin/node scripts/backup-database.js >> logs/backup.log 2>&1
+
+# Twice daily backups (2 AM and 2 PM)
+0 2,14 * * * cd /path/to/smart-todo-app/backend && /usr/bin/node scripts/backup-database.js >> logs/backup.log 2>&1
+
+# Weekly backup every Sunday at 3:00 AM
+0 3 * * 0 cd /path/to/smart-todo-app/backend && /usr/bin/node scripts/backup-database.js >> logs/backup.log 2>&1
+
+# Hourly backup (for high-traffic applications)
+0 * * * * cd /path/to/smart-todo-app/backend && /usr/bin/node scripts/backup-database.js >> logs/backup.log 2>&1
+
+# ============================================================================
+# IMPORTANT NOTES:
+# ============================================================================
+# 1. Replace /path/to/smart-todo-app with your actual project path
+# 2. Replace /usr/bin/node with your actual Node.js path (find with: which node)
+# 3. Ensure the logs directory exists: mkdir -p /path/to/smart-todo-app/backend/logs
+# 4. Make backup script executable: chmod +x scripts/backup-database.js
+# 5. Test the command manually before adding to cron
+# 6. Ensure .env file is properly configured with MONGODB_URI
+# 7. For AWS S3 uploads, configure AWS credentials:
+#    - Set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in environment
+#    - Or use IAM roles (recommended for EC2/ECS)
+# 8. Monitor backup logs regularly: tail -f logs/backup.log
+# 9. Test restore procedure periodically to ensure backups are valid
+#
+# Cron format: minute hour day month weekday command
+#   minute:   0-59
+#   hour:     0-23
+#   day:      1-31
+#   month:    1-12
+#   weekday:  0-7 (0 and 7 are Sunday)
+# ============================================================================
+
+# ============================================================================
+# SYSTEMD TIMER ALTERNATIVE (Modern Linux systems)
+# ============================================================================
+# For systemd-based systems, you can use a timer instead of cron
+#
+# 1. Create service file: /etc/systemd/system/mongodb-backup.service
+#
+# [Unit]
+# Description=MongoDB Backup for Smart Todo App
+# After=network.target
+#
+# [Service]
+# Type=oneshot
+# User=youruser
+# WorkingDirectory=/path/to/smart-todo-app/backend
+# ExecStart=/usr/bin/node scripts/backup-database.js
+# StandardOutput=append:/path/to/smart-todo-app/backend/logs/backup.log
+# StandardError=append:/path/to/smart-todo-app/backend/logs/backup.log
+#
+# [Install]
+# WantedBy=multi-user.target
+#
+# 2. Create timer file: /etc/systemd/system/mongodb-backup.timer
+#
+# [Unit]
+# Description=Daily MongoDB Backup Timer
+# Requires=mongodb-backup.service
+#
+# [Timer]
+# OnCalendar=daily
+# OnCalendar=02:00
+# Persistent=true
+#
+# [Install]
+# WantedBy=timers.target
+#
+# 3. Enable and start the timer:
+#    sudo systemctl daemon-reload
+#    sudo systemctl enable mongodb-backup.timer
+#    sudo systemctl start mongodb-backup.timer
+#
+# 4. Check timer status:
+#    sudo systemctl status mongodb-backup.timer
+#    sudo systemctl list-timers
+# ============================================================================
+
+# ============================================================================
+# DOCKER COMPOSE INTEGRATION
+# ============================================================================
+# If running in Docker, add a backup service to docker-compose.yml:
+#
+# services:
+#   backup:
+#     build: ./backend
+#     command: node scripts/backup-database.js
+#     volumes:
+#       - ./backend:/app
+#       - backup-data:/app/backups
+#     environment:
+#       - MONGODB_URI=${MONGODB_URI}
+#       - BACKUP_RETENTION_DAYS=30
+#       - S3_BUCKET=${S3_BUCKET}
+#     depends_on:
+#       - mongodb
+#
+# volumes:
+#   backup-data:
+#
+# Then schedule with host cron:
+# 0 2 * * * docker-compose -f /path/to/docker-compose.yml run --rm backup
+# ============================================================================
+
+# ============================================================================
+# AWS ECS SCHEDULED TASK (For AWS ECS deployments)
+# ============================================================================
+# 1. Create a new task definition for the backup job
+# 2. Use AWS EventBridge (CloudWatch Events) to schedule:
+#    - Rate: rate(1 day) or cron(0 2 * * ? *)
+#    - Target: ECS Task
+#    - Task Definition: your-backup-task
+#    - Launch Type: FARGATE or EC2
+#    - Cluster: your-ecs-cluster
+# 3. Ensure IAM role has permissions for S3 uploads
+# ============================================================================
+
+# ============================================================================
+# KUBERNETES CRONJOB (For Kubernetes deployments)
+# ============================================================================
+# Create a CronJob resource:
+#
+# apiVersion: batch/v1
+# kind: CronJob
+# metadata:
+#   name: mongodb-backup
+# spec:
+#   schedule: "0 2 * * *"
+#   jobTemplate:
+#     spec:
+#       template:
+#         spec:
+#           containers:
+#           - name: backup
+#             image: your-app-image:latest
+#             command: ["node", "scripts/backup-database.js"]
+#             env:
+#             - name: MONGODB_URI
+#               valueFrom:
+#                 secretKeyRef:
+#                   name: mongodb-secret
+#                   key: uri
+#             volumeMounts:
+#             - name: backup-storage
+#               mountPath: /app/backups
+#           restartPolicy: OnFailure
+#           volumes:
+#           - name: backup-storage
+#             persistentVolumeClaim:
+#               claimName: backup-pvc
+# ============================================================================

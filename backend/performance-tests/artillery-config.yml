@@ -1,0 +1,222 @@
+# Artillery.io Load Testing Configuration
+# Install: npm install -g artillery
+# Run: artillery run performance-tests/artillery-config.yml
+# Run with report: artillery run --output report.json performance-tests/artillery-config.yml
+# Generate HTML report: artillery report report.json
+
+config:
+  target: "http://localhost:5000"
+  phases:
+    # Warm-up phase: 5 users per second for 30 seconds
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm-up"
+
+    # Ramp-up phase: gradually increase to 20 users per second
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 20
+      name: "Ramp-up"
+
+    # Sustained load: 20 users per second for 2 minutes
+    - duration: 120
+      arrivalRate: 20
+      name: "Sustained load"
+
+    # Peak load: spike to 50 users per second
+    - duration: 30
+      arrivalRate: 50
+      name: "Peak load"
+
+    # Cool-down: reduce to 5 users per second
+    - duration: 30
+      arrivalRate: 5
+      name: "Cool-down"
+
+  # Performance thresholds
+  ensure:
+    maxErrorRate: 1  # Max 1% error rate
+    p95: 1500        # 95th percentile response time < 1500ms
+    p99: 3000        # 99th percentile response time < 3000ms
+
+  # HTTP configuration
+  http:
+    timeout: 10
+
+  # Payload definitions
+  payload:
+    path: "performance-tests/test-data.csv"
+    fields:
+      - username
+      - email
+      - password
+
+  # Variables
+  variables:
+    testUser:
+      - "testuser1@example.com"
+      - "testuser2@example.com"
+      - "testuser3@example.com"
+
+  # Processor (for custom JavaScript logic)
+  processor: "./performance-tests/artillery-processor.js"
+
+  # Plugins
+  plugins:
+    expect: {}
+    metrics-by-endpoint: {}
+
+scenarios:
+  # Test 1: User Registration Flow
+  - name: "User Registration"
+    weight: 10
+    flow:
+      - post:
+          url: "/api/auth/register"
+          json:
+            username: "loadtest_{{ $randomString() }}"
+            email: "loadtest_{{ $randomString() }}@example.com"
+            password: "TestPassword123!"
+          expect:
+            - statusCode: 201
+            - contentType: json
+            - hasProperty: token
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+  # Test 2: User Login Flow
+  - name: "User Login"
+    weight: 20
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testUser }}"
+            password: "TestPassword123!"
+          expect:
+            - statusCode: 200
+            - hasProperty: token
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+      # Get current user info
+      - get:
+          url: "/api/auth/me"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Test 3: Todo CRUD Operations
+  - name: "Todo Operations"
+    weight: 50
+    flow:
+      # Login first
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testUser }}"
+            password: "TestPassword123!"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+      # Create todo
+      - post:
+          url: "/api/todos"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            title: "Load test todo - {{ $randomString() }}"
+            description: "This is a load test todo item"
+            category: "work"
+            priority: "medium"
+            dueDate: "2025-12-31"
+          expect:
+            - statusCode: 201
+          capture:
+            - json: "$._id"
+              as: "todoId"
+
+      # Get all todos
+      - get:
+          url: "/api/todos"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+      # Get todo stats
+      - get:
+          url: "/api/todos/stats"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+      # Update todo
+      - put:
+          url: "/api/todos/{{ todoId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          json:
+            title: "Updated load test todo"
+            completed: true
+          expect:
+            - statusCode: 200
+
+      # Delete todo
+      - delete:
+          url: "/api/todos/{{ todoId }}"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+
+  # Test 4: Analytics Endpoint
+  - name: "Analytics Dashboard"
+    weight: 15
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testUser }}"
+            password: "TestPassword123!"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+      - get:
+          url: "/api/analytics?days=30"
+          headers:
+            Authorization: "Bearer {{ authToken }}"
+          expect:
+            - statusCode: 200
+            - hasProperty: dailyActivity
+            - hasProperty: categoryBreakdown
+
+  # Test 5: Stress Test - Rapid Todo Creation
+  - name: "Bulk Todo Creation"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "{{ testUser }}"
+            password: "TestPassword123!"
+          capture:
+            - json: "$.token"
+              as: "authToken"
+
+      - loop:
+        - post:
+            url: "/api/todos"
+            headers:
+              Authorization: "Bearer {{ authToken }}"
+            json:
+              title: "Bulk todo {{ $loopCount }}"
+              category: "work"
+              priority: "low"
+        count: 10
