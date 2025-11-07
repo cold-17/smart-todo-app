@@ -10,7 +10,10 @@
     "test:watch": "jest --watch --setupFilesAfterEnv=./__tests__/setup.js",
     "test:coverage": "jest --coverage --setupFilesAfterEnv=./__tests__/setup.js",
     "backup": "node scripts/backup-database.js",
-    "restore": "node scripts/restore-database.js"
+    "restore": "node scripts/restore-database.js",
+    "create-test-users": "node scripts/create-test-users.js",
+    "perf:benchmark": "node performance-tests/simple-benchmark.js",
+    "perf:setup": "npm run create-test-users"
   },
   "keywords": [],
   "author": "",

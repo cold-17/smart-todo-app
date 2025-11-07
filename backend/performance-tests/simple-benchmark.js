@@ -114,9 +114,25 @@ async function login() {
       return data.token;
     }
 
-    throw new Error(`Login failed: ${response.statusCode}`);
+    // Parse error response
+    let errorMessage = `Login failed with status ${response.statusCode}`;
+    try {
+      const errorData = JSON.parse(response.body);
+      errorMessage = `Login failed: ${errorData.message || errorData.error || response.statusCode}`;
+    } catch (e) {
+      // Response not JSON
+    }
+
+    throw new Error(errorMessage);
   } catch (error) {
-    console.error('Login error:', error.message || error);
+    console.error('\n❌ Login Error:', error.message || error);
+
+    if (error.message.includes('400') || error.message.includes('Invalid credentials')) {
+      console.error('\n💡 The test user does not exist or credentials are wrong.');
+      console.error('   Run this command to create test users:');
+      console.error('   npm run create-test-users\n');
+    }
+
     return null;
   }
 }
