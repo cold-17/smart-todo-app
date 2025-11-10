@@ -33,7 +33,11 @@ export const SocketProvider = ({ children }) => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    const newSocket = io('http://localhost:5000', {
+    // Use environment variable for API URL, or fallback to localhost
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+    const socketUrl = apiUrl.replace('/api', ''); // Remove /api suffix for socket connection
+
+    const newSocket = io(socketUrl, {
       auth: { token },
       autoConnect: true
     });

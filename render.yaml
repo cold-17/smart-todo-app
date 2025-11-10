@@ -1,0 +1,64 @@
+# Render Blueprint for Smart Todo App
+# This file defines all services needed to deploy the app
+
+services:
+  # Backend API Service
+  - type: web
+    name: smart-todo-backend
+    runtime: node
+    region: oregon # Choose: oregon, ohio, frankfurt, singapore
+    plan: free # Options: free, starter ($7/mo), standard ($25/mo)
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: JWT_SECRET
+        generateValue: true # Auto-generates a secure secret
+      - key: MONGODB_URI
+        fromDatabase:
+          name: smart-todo-mongodb
+          property: connectionString
+      - key: CLIENT_URL
+        fromService:
+          type: web
+          name: smart-todo-frontend
+          property: host
+      - key: OPENAI_API_KEY
+        sync: false # Optional - you'll add this manually if needed
+
+  # Frontend Static Site
+  - type: web
+    name: smart-todo-frontend
+    runtime: static
+    region: oregon # Should match backend region
+    plan: free # Static sites are always free on Render
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    headers:
+      - path: /*
+        name: X-Frame-Options
+        value: SAMEORIGIN
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: VITE_API_URL
+        sync: false # You'll set this manually to: https://smart-todo-backend.onrender.com/api
+
+# MongoDB Database
+databases:
+  - name: smart-todo-mongodb
+    plan: free # Options: free (256MB), starter ($7/mo - 512MB), standard ($25/mo - 2GB)
+    databaseName: smart-todo-app
+    user: smart_todo_user
+    region: oregon # Should match services region
