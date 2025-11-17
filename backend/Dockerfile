@@ -21,13 +21,7 @@ FROM node:20-alpine AS production
 # Set working directory
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
-
-# Install only production dependencies
-RUN npm ci --only=production && npm cache clean --force
-
-# Copy application code from builder
+# Copy everything from builder (includes node_modules and source)
 COPY --from=builder /app .
 
 # Create a non-root user

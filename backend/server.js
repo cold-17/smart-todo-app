@@ -22,6 +22,9 @@ const { apiLimiter, authLimiter, aiLimiter } = require('./middleware/rateLimiter
 
 const app = express();
 
+// Trust proxy - needed when behind Nginx reverse proxy
+app.set('trust proxy', 1);
+
 // Initialize Sentry (must be before any other middleware)
 const { initSentry } = require('./config/sentry');
 const sentry = initSentry(app);

@@ -15,7 +15,7 @@ const envSchema = Joi.object({
     'string.min': 'JWT_SECRET must be at least 32 characters for security.',
   }),
   CLIENT_URL: Joi.string().uri().default('http://localhost:5173'),
-  OPENAI_API_KEY: Joi.string().optional().messages({
+  OPENAI_API_KEY: Joi.string().allow('').optional().messages({
     'string.base': 'OPENAI_API_KEY must be a valid string if provided.',
   }),
   SENTRY_DSN: Joi.string().uri().optional().messages({
