@@ -32,6 +32,9 @@ RUN addgroup -g 1001 -S nodejs && \
 # Create logs directory with proper permissions
 RUN mkdir -p logs && chown -R nodejs:nodejs logs
 
+# Fix permissions for config directory (ensure readable by nodejs user)
+RUN chmod -R 755 /app/config /app/middleware /app/models /app/routes /app/services /app/sockets
+
 # Switch to non-root user
 USER nodejs
 
