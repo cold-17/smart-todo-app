@@ -1,9 +1,10 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+// eslint-disable-next-line no-unused-vars
 import { motion } from 'framer-motion';
 import TodoItem from './TodoItem';
 
-export function SortableTodoItem({ todo, index, bulkMode, isSelected, onToggleSelect, viewMode }) {
+export function SortableTodoItem({ todo, index, bulkMode, isSelected, onToggleSelect }) {
   const {
     attributes,
     listeners,

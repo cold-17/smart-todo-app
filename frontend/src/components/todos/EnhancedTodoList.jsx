@@ -4,6 +4,7 @@ import TodoItem from './TodoItem';
 import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { arrayMove, SortableContext, sortableKeyboardCoordinates, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { SortableTodoItem } from './SortableTodoItem';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 
 const EnhancedTodoList = ({ quickFilter = null, onClearQuickFilter = () => {} }) => {

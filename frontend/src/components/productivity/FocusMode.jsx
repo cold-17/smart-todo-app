@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from 'framer-motion';
 import { useTodos } from '../../context/TodoContext';
-import { useTheme } from '../../context/ThemeContext';
 import PomodoroTimer from './PomodoroTimer';
 
 const FocusMode = ({ onClose }) => {
-  const { todos, toggleTodoComplete, updateTodo } = useTodos();
-  const { darkMode } = useTheme();
+  const { todos, toggleTodoComplete } = useTodos();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showPomodoro, setShowPomodoro] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
