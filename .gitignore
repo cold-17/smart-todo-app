@@ -25,6 +25,11 @@ build/
 */dist/
 */build/
 
+# Test coverage
+coverage/
+*/coverage/
+.nyc_output/
+
 # IDE files
 .vscode/
 .idea/

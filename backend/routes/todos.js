@@ -15,21 +15,48 @@ router.use(authMiddleware);
 router.get('/', asyncHandler(async (req, res) => {
   const { category, completed, priority } = req.query;
 
-  let filter = { user: req.user._id };
+  // Whitelist of valid categories and priorities - prevents NoSQL injection
+  const VALID_CATEGORIES = Object.freeze(['work', 'personal', 'health', 'learning', 'urgent', 'general']);
+  const VALID_PRIORITIES = Object.freeze(['low', 'medium', 'high', 'urgent']);
 
-  // Whitelist of valid categories and priorities
-  const validCategories = ['work', 'personal', 'health', 'learning', 'urgent', 'general'];
-  const validPriorities = ['low', 'medium', 'high', 'urgent'];
+  // Sanitize inputs - map to validated literal values
+  let validatedCategory = null;
+  if (category && category !== 'all') {
+    for (const cat of VALID_CATEGORIES) {
+      if (category === cat) {
+        validatedCategory = cat; // Use literal from whitelist, not user input
+        break;
+      }
+    }
+  }
 
-  // Apply filters with strict validation
-  if (category && category !== 'all' && validCategories.includes(category)) {
-    filter.category = category;
+  let validatedCompleted = null;
+  if (completed === 'true') {
+    validatedCompleted = true;
+  } else if (completed === 'false') {
+    validatedCompleted = false;
   }
-  if (completed !== undefined && (completed === 'true' || completed === 'false')) {
-    filter.completed = completed === 'true';
+
+  let validatedPriority = null;
+  if (priority && priority !== 'all') {
+    for (const pri of VALID_PRIORITIES) {
+      if (priority === pri) {
+        validatedPriority = pri; // Use literal from whitelist, not user input
+        break;
+      }
+    }
   }
-  if (priority && priority !== 'all' && validPriorities.includes(priority)) {
-    filter.priority = priority;
+
+  // Build filter with only validated literal values
+  const filter = { user: req.user._id };
+  if (validatedCategory !== null) {
+    filter.category = validatedCategory;
+  }
+  if (validatedCompleted !== null) {
+    filter.completed = validatedCompleted;
+  }
+  if (validatedPriority !== null) {
+    filter.priority = validatedPriority;
   }
 
   const todos = await Todo.find(filter).sort({ createdAt: -1 });
