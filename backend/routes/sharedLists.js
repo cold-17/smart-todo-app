@@ -84,7 +84,10 @@ router.post('/:id/invite', async (req, res) => {
   try {
     const { email } = req.body;
 
-    if (!email || email.trim() === '') {
+    // Sanitize email input - ensure it's a string and prevent NoSQL injection
+    const sanitizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+
+    if (!sanitizedEmail) {
       return res.status(400).json({ message: 'Email is required' });
     }
 
@@ -100,7 +103,7 @@ router.post('/:id/invite', async (req, res) => {
     }
 
     // Check if user exists
-    const invitedUser = await User.findOne({ email: email.trim().toLowerCase() });
+    const invitedUser = await User.findOne({ email: sanitizedEmail });
 
     if (invitedUser) {
       // Check if already a member
@@ -116,7 +119,7 @@ router.post('/:id/invite', async (req, res) => {
     } else {
       // Add to pending invites
       const alreadyInvited = list.pendingInvites.some(
-        invite => invite.email === email.trim().toLowerCase()
+        invite => invite.email === sanitizedEmail
       );
 
       if (alreadyInvited) {
@@ -124,7 +127,7 @@ router.post('/:id/invite', async (req, res) => {
       }
 
       list.pendingInvites.push({
-        email: email.trim().toLowerCase(),
+        email: sanitizedEmail,
         invitedBy: req.user._id
       });
     }
@@ -226,14 +229,18 @@ router.get('/:id/todos', async (req, res) => {
 
     let filter = { sharedList: req.params.id };
 
-    // Apply filters
-    if (category && category !== 'all') {
+    // Whitelist of valid categories and priorities
+    const validCategories = ['work', 'personal', 'health', 'learning', 'urgent', 'general'];
+    const validPriorities = ['low', 'medium', 'high', 'urgent'];
+
+    // Apply filters with strict validation
+    if (category && category !== 'all' && validCategories.includes(category)) {
       filter.category = category;
     }
-    if (completed !== undefined) {
+    if (completed !== undefined && (completed === 'true' || completed === 'false')) {
       filter.completed = completed === 'true';
     }
-    if (priority && priority !== 'all') {
+    if (priority && priority !== 'all' && validPriorities.includes(priority)) {
       filter.priority = priority;
     }
 

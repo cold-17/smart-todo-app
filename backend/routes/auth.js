@@ -19,20 +19,24 @@ router.post('/register', validate(authSchemas.register), asyncHandler(async (req
 
   logger.info('Registration attempt', { username, email });
 
+  // Sanitize inputs - ensure they're strings and prevent NoSQL injection
+  const sanitizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+  const sanitizedUsername = typeof username === 'string' ? username.trim() : '';
+
   // Check if user already exists
   const existingUser = await User.findOne({
-    $or: [{ email }, { username }]
+    $or: [{ email: sanitizedEmail }, { username: sanitizedUsername }]
   });
 
   if (existingUser) {
-    logger.warn('Registration failed - user already exists', { email });
+    logger.warn('Registration failed - user already exists', { email: sanitizedEmail });
     return res.status(400).json({
-      message: existingUser.email === email ? 'Email already registered' : 'Username already taken'
+      message: existingUser.email === sanitizedEmail ? 'Email already registered' : 'Username already taken'
     });
   }
 
   // Create new user
-  const user = new User({ username, email, password });
+  const user = new User({ username: sanitizedUsername, email: sanitizedEmail, password });
   await user.save();
 
   logger.info('User registered successfully', { userId: user._id, username: user.username });
@@ -57,10 +61,13 @@ router.post('/login', validate(authSchemas.login), asyncHandler(async (req, res)
 
   logger.info('Login attempt', { email });
 
+  // Sanitize email input - ensure it's a string and prevent NoSQL injection
+  const sanitizedEmail = typeof email === 'string' ? email.trim().toLowerCase() : '';
+
   // Find user by email
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email: sanitizedEmail });
   if (!user) {
-    logger.warn('Login failed - user not found', { email });
+    logger.warn('Login failed - user not found', { email: sanitizedEmail });
     return res.status(400).json({ message: 'Invalid credentials' });
   }
 

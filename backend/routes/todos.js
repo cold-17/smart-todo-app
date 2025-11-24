@@ -17,14 +17,18 @@ router.get('/', asyncHandler(async (req, res) => {
 
   let filter = { user: req.user._id };
 
-  // Apply filters
-  if (category && category !== 'all') {
+  // Whitelist of valid categories and priorities
+  const validCategories = ['work', 'personal', 'health', 'learning', 'urgent', 'general'];
+  const validPriorities = ['low', 'medium', 'high', 'urgent'];
+
+  // Apply filters with strict validation
+  if (category && category !== 'all' && validCategories.includes(category)) {
     filter.category = category;
   }
-  if (completed !== undefined) {
+  if (completed !== undefined && (completed === 'true' || completed === 'false')) {
     filter.completed = completed === 'true';
   }
-  if (priority && priority !== 'all') {
+  if (priority && priority !== 'all' && validPriorities.includes(priority)) {
     filter.priority = priority;
   }
 
