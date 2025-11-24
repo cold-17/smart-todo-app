@@ -10,7 +10,11 @@ export default defineConfig({
       'tasks.charlieold.com',
       'localhost',
       '127.0.0.1'
-    ]
+    ],
+    hmr: {
+      clientPort: 443,
+      protocol: 'wss'
+    }
   },
   plugins: [
     react(),
