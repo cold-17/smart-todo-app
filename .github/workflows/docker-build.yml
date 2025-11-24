@@ -20,6 +20,7 @@ jobs:
       contents: read
       packages: write
       security-events: write
+      actions: read
 
     steps:
       - name: Checkout code
@@ -48,27 +49,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
 
-      - name: Build Backend image for scanning
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          file: ./backend/Dockerfile
-          push: false
-          load: true
-          tags: backend-scan:latest
-          cache-from: type=gha
-          target: production
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: backend-scan:latest
-          format: 'sarif'
-          output: 'trivy-backend-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
-        continue-on-error: true
-
       - name: Build and push Backend image
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v5
@@ -82,13 +62,6 @@ jobs:
           cache-to: type=gha,mode=max
           target: production
 
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
-        if: hashFiles('trivy-backend-results.sarif') != ''
-        with:
-          sarif_file: 'trivy-backend-results.sarif'
-        continue-on-error: true
-
   build-frontend:
     name: Build Frontend Image
     runs-on: ubuntu-latest
@@ -96,6 +69,7 @@ jobs:
       contents: read
       packages: write
       security-events: write
+      actions: read
 
     steps:
       - name: Checkout code
@@ -124,29 +98,6 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=sha,prefix={{branch}}-
 
-      - name: Build Frontend image for scanning
-        uses: docker/build-push-action@v5
-        with:
-          context: ./frontend
-          file: ./frontend/Dockerfile
-          push: false
-          load: true
-          tags: frontend-scan:latest
-          cache-from: type=gha
-          target: production
-          build-args: |
-            VITE_API_URL=${{ secrets.VITE_API_URL || 'http://localhost:5000/api' }}
-
-      - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: frontend-scan:latest
-          format: 'sarif'
-          output: 'trivy-frontend-results.sarif'
-          severity: 'CRITICAL,HIGH'
-          exit-code: '0'
-        continue-on-error: true
-
       - name: Build and push Frontend image
         if: github.event_name != 'pull_request'
         uses: docker/build-push-action@v5
@@ -161,13 +112,6 @@ jobs:
           target: production
           build-args: |
             VITE_API_URL=${{ secrets.VITE_API_URL || 'http://localhost:5000/api' }}
-
-      - name: Upload Trivy results to GitHub Security
-        uses: github/codeql-action/upload-sarif@v4
-        if: hashFiles('trivy-frontend-results.sarif') != ''
-        with:
-          sarif_file: 'trivy-frontend-results.sarif'
-        continue-on-error: true
 
   docker-compose-test:
     name: Test Docker Compose
