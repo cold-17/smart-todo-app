@@ -39,7 +39,7 @@ export const exportToPDF = (todos, stats) => {
   const urgentTasks = todos.filter(t => t.priority === 'urgent' && !t.completed);
   const highTasks = todos.filter(t => t.priority === 'high' && !t.completed);
   const mediumTasks = todos.filter(t => t.priority === 'medium' && !t.completed);
-  const lowTasks = todos.filter(t => t.priority === 'low' && !t.completed);
+  // Low priority tasks not included in the report to keep it focused on high-impact items
 
   let currentY = doc.lastAutoTable.finalY + 15;
 

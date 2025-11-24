@@ -1,4 +1,6 @@
 import * as Sentry from '@sentry/react';
+import React from 'react';
+import { useLocation, useNavigationType, createRoutesFromChildren, matchRoutes } from 'react-router-dom';
 
 /**
  * Initialize Sentry for frontend error tracking

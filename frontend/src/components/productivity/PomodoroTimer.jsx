@@ -47,6 +47,7 @@ const PomodoroTimer = ({ task, onClose }) => {
         clearInterval(intervalRef.current);
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isRunning, timeLeft]);
 
   const handleTimerComplete = () => {

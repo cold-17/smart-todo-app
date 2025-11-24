@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
         payload: res.data.user,
         token: localStorage.getItem('token')
       });
-    } catch (error) {
+    } catch {
       localStorage.removeItem('token');
       dispatch({ type: 'LOGOUT' });
     }
@@ -122,6 +122,7 @@ export const AuthProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {

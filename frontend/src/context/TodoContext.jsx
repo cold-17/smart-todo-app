@@ -49,12 +49,12 @@ export const TodoProvider = ({ children }) => {
     emitTodoCreated,
     emitTodoUpdated,
     emitTodoDeleted,
-    emitTodoToggled,
+    // emitTodoToggled, // Currently unused
     onTodoCreated,
     onTodoUpdated,
     onTodoDeleted,
     onTodoToggled,
-    currentListId
+    // currentListId // Currently unused
   } = useSocket();
 
   const fetchTodos = useCallback(async (filters = {}) => {
@@ -202,6 +202,7 @@ export const TodoProvider = ({ children }) => {
   );
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useTodos = () => {
   const context = useContext(TodoContext);
   if (!context) {

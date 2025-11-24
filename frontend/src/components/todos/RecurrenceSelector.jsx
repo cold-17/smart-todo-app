@@ -29,6 +29,7 @@ const RecurrenceSelector = ({ value = {}, onChange }) => {
         endDate: endDate || null
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [enabled, pattern, interval, daysOfWeek, dayOfMonth, endDate]);
 
   const toggleDayOfWeek = (day) => {
