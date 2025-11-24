@@ -41,9 +41,3 @@ ehthumbs.db
 Thumbs.db
 
 *.md
-!SECURITY_IMPLEMENTATION.md
-!TESTING.md
-!DOCKER.md
-!DOCKER_QUICKSTART.md
-!README.md
-!CLAUDE.md
